@@ -1,0 +1,8 @@
+--- 
+format: 1
+handler: 
+  commit: 20f687457b632fbce3c52c0d31c0b68fc38c2488
+  branch: master
+lock: false
+repository_class: Piston::Git::Repository
+repository_url: git://github.com/jmwohl/SilverStripe-HTML5Boilerplate-Theme.git
