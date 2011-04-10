@@ -1,4 +1,4 @@
-<% require javascript(dataobject_manager/code/mp3/audio-player.js) %>
+<% require javascript(dataobjectmanager/code/mp3/audio-player.js) %>
 
 <object type="application/x-shockwave-flash" data="$SWFLink" id="audioplayer1" height="24" width="290">
 	<param name="movie" value="$SWFLink">
