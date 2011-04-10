@@ -1,0 +1,8 @@
+--- 
+format: 1
+handler: 
+  commit: e94f3c044ba2042dec7fca643122cb65ca91e483
+  branch: master
+lock: false
+repository_class: Piston::Git::Repository
+repository_url: git://github.com/unclecheese/Uploadify.git
