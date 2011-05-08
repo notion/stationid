@@ -291,7 +291,7 @@ ul li strong {
 
 #light {
 	position: absolute;
-	top: 20%;
+	top: 100px;
 	left: 30px;
 	z-index: -1;
 }
@@ -318,7 +318,8 @@ ul li strong {
 	font-size: 85px;
 	line-height: 95px;
 	margin: 0;
-	margin-top: 47px;
+/*	margin-top: 47px;*/
+	margin-top: 37px;
 	margin-left: 10%;
 	padding: 0;
 	width: 300px;
@@ -369,13 +370,14 @@ ul li strong {
 	width: 400px;
 	margin-top: 50px;
 	margin-left: 30%;
-	height: 800px;
+	height: 2500px;
 }
 
 #ScrollingContent #video {
 	border: 1px solid #ED1651;
 	height: 224px;
 	width: 400px;
+	margin-top: 30%;
 	overflow: hidden;
 }
 
@@ -392,7 +394,7 @@ ul li strong {
 
 #MainContent {
 	position: fixed;
-	top: 20%;
+	top: 100px;
 	left: 15%;
 	width: 350px;
 }
