@@ -14,7 +14,7 @@
        Remove this if you use the .htaccess -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <title>$Title &gt; $SiteConfig.Title</title>
+  <title>$SiteConfig.Title // $SiteConfig.Tagline</title>
   <meta name="description" content="">
   <meta name="author" content="">
 
@@ -27,6 +27,8 @@
 
 
   <!-- CSS : implied media="all" -->
+	<link href="http://fast.fonts.com/cssapi/c24845b9-2bfa-4bd3-95cd-64f9ec0a3b11.css" rel="stylesheet" type="text/css" />
+
   <link rel="stylesheet" href="$ThemeDir/css/style.css?v=2">
 
   <!-- Uncomment if you are specifically targeting less enabled mobile browsers
@@ -34,23 +36,11 @@
  
   <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
   <script src="$ThemeDir/js/libs/modernizr-1.6.min.js"></script>
-
-</head>
+	<!-- <script type="text/javascript" src="http://fast.fonts.com/jsapi/c24845b9-2bfa-4bd3-95cd-64f9ec0a3b11.js"></script></head> -->
 
 <body>
-
-  <div id="container">
-    <header>
-		<h1>$Title</h1>
-    </header>
-		$Form
-		$Layout
-    <footer>
-
-    </footer>
-  </div> <!--! end of #container -->
-
-
+	$Form
+	$Layout
   <!-- Javascript at the bottom for fast page loading -->
 
   <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
