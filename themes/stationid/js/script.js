@@ -3,7 +3,7 @@
 */
 
 (function($){
-	console.log($('#ScrollingContent').height());
+	// console.log($('#ScrollingContent').height());
 	
 	var REAR_PARRALAX = 5;
 	var PERSPECTIVE = 2;
@@ -17,11 +17,11 @@
 	var light_top = parseFloat(light_top_px.slice(0, light_top_px.length-2));
 	// console.log(light_top);
 	$(window).scroll(function(e) {
-		
 		// background positioning
 		var bg_height = default_bg_pos[1];
 		bg_height = (default_bg_pos[1] - $(this).scrollTop())/REAR_PARRALAX;
-				$('#Background').css('background-position', arrayToPxDimensions([default_bg_pos[0], bg_height]));
+		console.log(pxDimensionsToArray($('#Background').css('background-position')));
+		$('#Background').css('background-position', arrayToPxDimensions([default_bg_pos[0], bg_height]));
 				
 		// light positioning
 		var new_light_top = light_top - ($(this).scrollTop()/REAR_PARRALAX);
@@ -32,6 +32,29 @@
 	});
 })(this.jQuery);
 
+function pxDimensionsToArray(string) {
+	console.log(string);
+	// convert string to array
+	var array = string.split(' ');
+	// remove 'px' and convert to numbers
+	jQuery.each(array, function(i, s) {
+		if(array[i].charAt(s.length-1) == "%") {
+			array[i] = parseFloat(s.slice(0, s.length-1));
+		} else {
+			array[i] = parseFloat(s.slice(0, s.length-2));
+		}
+	});	
+	return array;
+}
+
+function arrayToPxDimensions(array) {
+	jQuery.each(array, function(i, n) {
+		array[i] = n+'px'
+	});
+	var string = array.join(' ');
+	
+	return string;
+}
 
 
 

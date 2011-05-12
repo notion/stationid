@@ -3,24 +3,6 @@
 (function($){
 })(this.jQuery);
 
-function pxDimensionsToArray(string) {
-	// convert string to array
-	var array = string.split(' ');
-	// remove 'px' and convert to numbers
-	jQuery.each(array, function(i, s) {
-		array[i] = parseFloat(s.slice(0, s.length-2));
-	});	
-	return array;
-}
-
-function arrayToPxDimensions(array) {
-	jQuery.each(array, function(i, n) {
-		array[i] = n+'px'
-	});
-	var string = array.join(' ');
-	
-	return string;
-}
 
 // usage: log('inside coolFunc',this,arguments);
 // paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
