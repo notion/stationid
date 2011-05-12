@@ -21,11 +21,6 @@
  */
 class Upload extends Controller {
 	
-	static $allowed_actions = array( 
-		'index',
-		'load'
-	);
-	
 	/**
 	 * A File object
 	 * @var File

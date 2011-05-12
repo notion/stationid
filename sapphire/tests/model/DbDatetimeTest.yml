@@ -1,5 +1,4 @@
-DbDateTimeTest_Team:
-	team1:
-		Title: Team 1
-	team2:
-		Title: Team 2
+Page:
+    first:
+        Title: Home page
+        URLSegment: home

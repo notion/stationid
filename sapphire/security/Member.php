@@ -1,7 +1,6 @@
 <?php
 /**
  * The member class which represents the users of the system
- *
  * @package sapphire
  * @subpackage security
  */
@@ -135,7 +134,6 @@ class Member extends DataObject {
 	}
 	
 	function requireDefaultRecords() {
-		parent::requireDefaultRecords();
 		// Default groups should've been built by Group->requireDefaultRecords() already
 		
 		// Find or create ADMIN group
@@ -557,7 +555,7 @@ class Member extends DataObject {
 	static function currentUser() {
 		$id = Member::currentUserID();
 		if($id) {
-			return DataObject::get_one("Member", "\"Member\".\"ID\" = $id", true, 1);
+			return DataObject::get_one("Member", "\"Member\".\"ID\" = $id");
 		}
 	}
 
@@ -693,24 +691,6 @@ class Member extends DataObject {
 
 		if($this->isChanged('Password')) {
 			MemberPassword::log($this);
-		}
-	}
-	
-	/**
-	 * If any admin groups are requested, deny the whole save operation.
-	 * 
-	 * @param Array $ids Database IDs of Group records
-	 * @return boolean
-	 */
-	function onChangeGroups($ids) {
-		// Filter out admin groups to avoid privilege escalation, 
-		// unless the current user is an admin already
-		if(!Permission::checkMember($this, 'ADMIN')) {
-			$adminGroups = Permission::get_groups_by_permission('ADMIN');
-			$adminGroupIDs = ($adminGroups) ? $adminGroups->column('ID') : array();
-			return count(array_intersect($ids, $adminGroupIDs)) == 0;
-		} else {
-			return true;
 		}
 	}
 
@@ -1637,8 +1617,9 @@ class Member_ProfileForm extends Form {
 		Requirements::javascript(SAPPHIRE_DIR . "/thirdparty/prototype/prototype.js");
 		Requirements::javascript(SAPPHIRE_DIR . "/thirdparty/behaviour/behaviour.js");
 		Requirements::javascript(SAPPHIRE_DIR . "/javascript/prototype_improvements.js");
-		Requirements::javascript(SAPPHIRE_DIR . "/thirdparty/scriptaculous/scriptaculous.js");
-		Requirements::javascript(SAPPHIRE_DIR . "/thirdparty/scriptaculous/controls.js");
+		Requirements::javascript(THIRDPARTY_DIR . "/scriptaculous/scriptaculous.js");
+		Requirements::javascript(THIRDPARTY_DIR . "/scriptaculous/controls.js");
+		Requirements::javascript(SAPPHIRE_DIR . "/javascript/layout_helpers.js");
 		Requirements::css(SAPPHIRE_DIR . "/css/Form.css");
 		
 		Requirements::css(SAPPHIRE_DIR . "/css/MemberProfileForm.css");
@@ -1980,4 +1961,5 @@ class Member_DatetimeOptionsetField extends OptionsetField {
 			return false;
 		}
 	}
+
 }

@@ -26,20 +26,44 @@ class i18nTest extends SapphireTest {
 	function setUp() {
 		parent::setUp();
 		
-		$this->alternateBasePath = $this->getCurrentAbsolutePath() . "/_fakewebroot";
+		$this->alternateBasePath = Director::baseFolder() . "/sapphire/tests/i18n/_fakewebroot";
 		$this->alternateBaseSavePath = TEMP_FOLDER . '/i18nTextCollectorTest_webroot';
 		FileSystem::makeFolder($this->alternateBaseSavePath);
+		
+		// SSViewer and ManifestBuilder don't support different webroots, hence we set the paths manually
+		global $_CLASS_MANIFEST;
+		$_CLASS_MANIFEST['i18nTestModule'] = $this->alternateBasePath . '/i18ntestmodule/code/i18nTestModule.php';
+		$_CLASS_MANIFEST['i18nTestModule_Addition'] = $this->alternateBasePath . '/i18ntestmodule/code/i18nTestModule.php';
+		$_CLASS_MANIFEST['i18nTestModuleDecorator'] = $this->alternateBasePath . '/i18nothermodule/code/i18nTestModuleDecorator.php';
+		
+		global $_ALL_CLASSES;
+		$_ALL_CLASSES['parents']['i18nTestModule'] = array('DataObject'=>'DataObject','Object'=>'Object');
+		$_ALL_CLASSES['parents']['i18nTestModule_Addition'] = array('Object'=>'Object');
+		$_ALL_CLASSES['parents']['i18nTestModuleDecorator'] = array('DataObjectDecorator'=>'DataObjectDecorator','Object'=>'Object');
 
-		// Push a template loader running from the fake webroot onto the stack.
-		$manifest = new SS_TemplateManifest($this->alternateBasePath, false, true);
-		$manifest->regenerate(false);
-		SS_TemplateLoader::instance()->pushManifest($manifest);
-
+		global $_TEMPLATE_MANIFEST;
+		$_TEMPLATE_MANIFEST['i18nTestModule.ss'] = array(
+			'main' => $this->alternateBasePath . '/i18ntestmodule/templates/i18nTestModule.ss',
+			'Layout' => $this->alternateBasePath . '/i18ntestmodule/templates/Layout/i18nTestModule.ss',
+		);
+		$_TEMPLATE_MANIFEST['i18nTestModuleInclude.ss'] = array(
+			'Includes' => $this->alternateBasePath . '/i18ntestmodule/templates/Includes/i18nTestModuleInclude.ss',
+		);
+		
 		$this->originalLocale = i18n::get_locale();
 	}
 	
 	function tearDown() {
-		SS_TemplateLoader::instance()->popManifest();
+		//FileSystem::removeFolder($this->tmpBasePath);
+		
+		global $_CLASS_MANIFEST;
+		unset($_CLASS_MANIFEST['i18nTestModule']);
+		unset($_CLASS_MANIFEST['i18nTestModule_Addition']);
+		
+		global $_TEMPLATE_MANIFEST;
+		unset($_TEMPLATE_MANIFEST['i18nTestModule.ss']);
+		unset($_TEMPLATE_MANIFEST['i18nTestModuleInclude.ss']);
+		
 		i18n::set_locale($this->originalLocale);
 		
 		parent::tearDown();
@@ -146,9 +170,9 @@ class i18nTest extends SapphireTest {
 		$lang['en_US']['i18nTestModule.ss']['LAYOUTTEMPLATENONAMESPACE'] = 'Layout Template no namespace';
 		$lang['en_US']['i18nTestModule']['SPRINTFNAMESPACE'] = 'My replacement: %s';
 		$lang['en_US']['i18nTestModule']['WITHNAMESPACE'] = 'Include Entity with Namespace';
-		$lang['en_US']['i18nTestModuleInclude.ss']['NONAMESPACE'] = 'Include Entity without Namespace';
+		$lang['en_US']['i18nTestModule.ss']['NONAMESPACE'] = 'Include Entity without Namespace';
 		$lang['en_US']['i18nTestModuleInclude.ss']['SPRINTFINCLUDENAMESPACE'] = 'My include replacement: %s';
-		$lang['en_US']['i18nTestModuleInclude.ss']['SPRINTFINCLUDENONAMESPACE'] = 'My include replacement no namespace: %s';
+		$lang['en_US']['i18nTestModule.ss']['SPRINTFINCLUDENONAMESPACE'] = 'My include replacement no namespace: %s';
 		$viewer = new SSViewer('i18nTestModule');
 		$parsedHtml = $viewer->process(new ArrayData(array('TestProperty' => 'TestPropertyValue')));
 		$this->assertContains(
@@ -169,7 +193,7 @@ class i18nTest extends SapphireTest {
 		$lang['de_DE']['i18nTestModule']['WITHNAMESPACE'] = 'TRANS Include Entity with Namespace';
 		$lang['de_DE']['i18nTestModuleInclude.ss']['NONAMESPACE'] = 'TRANS Include Entity without Namespace';
 		$lang['de_DE']['i18nTestModuleInclude.ss']['SPRINTFINCLUDENAMESPACE'] = 'TRANS My include replacement: %s';
-		$lang['de_DE']['i18nTestModuleInclude.ss']['SPRINTFINCLUDENONAMESPACE'] = 'TRANS My include replacement no namespace: %s';
+		$lang['de_DE']['i18nTestModule.ss']['SPRINTFINCLUDENONAMESPACE'] = 'TRANS My include replacement no namespace: %s';
 		$viewer = new SSViewer('i18nTestModule');
 		$parsedHtml = $viewer->process(new ArrayData(array('TestProperty' => 'TestPropertyValue')));
 		$this->assertContains(

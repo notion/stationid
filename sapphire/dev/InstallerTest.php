@@ -5,10 +5,6 @@
  * @subpackage testing
  */
 class InstallerTest extends Controller {
-	
-	static $allowed_actions = array(
-		'testrewrite'
-	);
 
 	function testrewrite() {
 		echo "OK";

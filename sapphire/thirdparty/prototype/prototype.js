@@ -852,8 +852,8 @@ Ajax.Request.prototype = Object.extend(new Ajax.Base(), {
 	    }
 	    
         // jquery ondemand integration patch
-	    if(typeof jQuery != 'undefined' && typeof jQuery.processOnDemandHeaders != 'undefined') {
-	        jQuery.processOnDemandHeaders(this.transport, prototypeAjax.transport.status, completeHandler);
+	    if(typeof prototypeOnDemandHandler != 'undefined') {
+	        prototypeOnDemandHandler(this.transport, this.transport.status, completeHandler);
 	    } else {
 	        completeHandler();
 	    }
@@ -1809,13 +1809,15 @@ Object.extend(Event, {
 
   _observeAndCache: function(element, name, observer, useCapture) {
     if (!this.observers) this.observers = [];
-    if (element.addEventListener) {
-      this.observers.push([element, name, observer, useCapture]);
-      element.addEventListener(name, observer, useCapture);
-    } else if (element.attachEvent) {
-      this.observers.push([element, name, observer, useCapture]);
-      element.attachEvent('on' + name, observer);
-    }
+	if(element) {
+    	if (element.addEventListener) {
+      		this.observers.push([element, name, observer, useCapture]);
+      		element.addEventListener(name, observer, useCapture);
+    	} else if (element.attachEvent) {
+      		this.observers.push([element, name, observer, useCapture]);
+      		element.attachEvent('on' + name, observer);
+    	}
+	}
   },
 
   unloadCache: function() {

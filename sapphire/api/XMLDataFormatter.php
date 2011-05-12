@@ -39,7 +39,8 @@ class XMLDataFormatter extends DataFormatter {
 		
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $this->convertDataObjectWithoutHeader($obj, $fields);
 	}
-
+		
+		
 	public function convertDataObjectWithoutHeader(DataObject $obj, $fields = null, $relations = null) {
 		$className = $obj->class;
 		$id = $obj->ID;
@@ -56,13 +57,7 @@ class XMLDataFormatter extends DataFormatter {
 			if(is_object($fieldValue) && is_subclass_of($fieldValue, 'Object') && $fieldValue->hasMethod('toXML')) {
 				$xml .= $fieldValue->toXML();
 			} else {
-				if('HTMLText' == $fieldType) {
-					// Escape HTML values using CDATA
-					$fieldValue = sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $fieldValue));
-				} else {
-					$fieldValue = Convert::raw2xml($fieldValue);
-				}
-				$xml .= "<$fieldName>$fieldValue</$fieldName>\n";
+				$xml .= "<$fieldName>" . Convert::raw2xml($fieldValue) . "</$fieldName>\n";
 			}
 		}
 	

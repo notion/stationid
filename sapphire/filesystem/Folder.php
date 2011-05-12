@@ -18,18 +18,8 @@
  * @subpackage filesystem
  */
 class Folder extends File {
-
-	static $singular_name = "Folder";
-
-	static $plural_name = "Folders";
-
-	static $default_sort = "\"Sort\"";
 	
-	function populateDefaults() {
-		parent::populateDefaults();
-		
-		if(!$this->Name) $this->Name = _t('AssetAdmin.NEWFOLDER',"NewFolder");
-	}
+	static $default_sort = "\"Sort\"";
 	
 	/**
 	 * Find the given folder or create it both as {@link Folder} database records
@@ -52,14 +42,7 @@ class Folder extends File {
 		$item = null;
 		foreach($parts as $part) {
 			if(!$part) continue; // happens for paths with a trailing slash
-			$item = DataObject::get_one(
-				"Folder", 
-				sprintf(
-					"\"Name\" = '%s' AND \"ParentID\" = %d",
-					Convert::raw2sql($part), 
-					(int)$parentID
-				)
-			);
+			$item = DataObject::get_one("Folder", "\"Name\" = '$part' AND \"ParentID\" = $parentID");
 			if(!$item) {
 				$item = new Folder();
 				$item->ParentID = $parentID;
@@ -304,24 +287,6 @@ class Folder extends File {
 		
 		parent::onBeforeDelete();
 	}
-
-	/** Override setting the Title of Folders to that Name, Filename and Title are always in sync.
-	 * Note that this is not appropriate for files, because someone might want to create a human-readable name
-	 * of a file that is different from its name on disk. But folders should always match their name on disk. */
-	function setTitle($title) {
-		$this->setField('Title',$title);
-		parent::setName($title); //set the name and filename to match the title
-	}
-
-	function setName($name) {
-		$this->setField('Title',$name);
-		parent::setName($name);
-	}
-
-	function setFilename($filename) {
-		$this->setField('Title',pathinfo($filename, PATHINFO_BASENAME));
-		parent::setFilename($filename);
-	}
 	
 	/**
 	 * Delete the database record (recursively for folders) without touching the filesystem
@@ -384,6 +349,14 @@ class Folder extends File {
 	}
 	
 	/**
+	 * This isn't a decendant of SiteTree, but needs this in case
+	 * the group is "reorganised";
+	 */
+	function cmsCleanup_parentChanged(){
+		
+	}
+
+	/**
 	 * Return the FieldSet used to edit this folder in the CMS.
 	 * You can modify this fieldset by subclassing folder, or by creating a {@link DataObjectDecorator}
 	 * and implemeting updateCMSFields(FieldSet $fields) on that decorator.	
@@ -413,6 +386,8 @@ class Folder extends File {
 				new Tab("Files", _t('Folder.FILESTAB', "Files"),
 					$titleField,
 					$fileList,
+					$deleteButton,
+					new HiddenField("FileIDs"),
 					new HiddenField("DestFolderID")
 				),
 				new Tab("Details", _t('Folder.DETAILSTAB', "Details"), 
@@ -426,6 +401,10 @@ class Folder extends File {
 						$this->getUploadIframe()
 					)
 				)
+				/* // commenting out unused files tab till bugs are fixed
+				new Tab("UnusedFiles", _t('Folder.UNUSEDFILESTAB', "Unused files"),
+					new Folder_UnusedAssetsField($this)
+				) */
 			),
 			new HiddenField("ID")
 		);
@@ -437,6 +416,51 @@ class Folder extends File {
 		$this->extend('updateCMSFields', $fields);
 		
 		return $fields;
+	}
+	
+	/**
+     * Looks for files used in system and create where clause which contains all ID's of files.
+     * 
+     * @returns String where clause which will work as filter.
+     */
+	public function getUnusedFilesListFilter() {
+		$result = DB::query("SELECT DISTINCT \"FileID\" FROM \"SiteTree_ImageTracking\"");
+		$usedFiles = array();
+		$where = '';
+		$classes = ClassInfo::subclassesFor('SiteTree');
+		
+		if($result->numRecords() > 0) {
+			while($nextResult = $result->next()) {
+				$where .= $nextResult['FileID'] . ','; 
+			}
+		}
+
+		foreach($classes as $className) {
+			$query = singleton($className)->extendedSQL();
+			$ids = $query->execute()->column();
+			if(!count($ids)) continue;
+			
+			foreach(singleton($className)->has_one() as $relName => $joinClass) {
+				if($joinClass == 'Image' || $joinClass == 'File') {
+					$fieldName = $relName .'ID';
+					$query = singleton($className)->extendedSQL("$fieldName > 0");
+					$query->distinct = true;
+					$query->select = array($fieldName);
+					$usedFiles = array_merge($usedFiles, $query->execute()->column());
+
+				} elseif($joinClass == 'Folder') {
+ 					// @todo
+				}
+			}
+		}
+		
+		if($usedFiles) {
+ 			return "\"File\".\"ID\" NOT IN (" . implode(', ', $usedFiles) . ") AND (\"ClassName\" = 'File' OR \"ClassName\" = 'Image')";
+
+		} else {
+			return "(\"ClassName\" = 'File' OR \"ClassName\" = 'Image')";
+		}
+		return $where;
 	}
 
 	/**
@@ -455,24 +479,66 @@ HTML;
 	function ChildFolders() {
 		return DataObject::get("Folder", "\"ParentID\" = " . (int)$this->ID);
 	}
+}
+
+/**
+ * @package sapphire
+ * @subpackage filesystem
+ */
+class Folder_UnusedAssetsField extends CompositeField {
+	protected $folder;
 	
+	public function __construct($folder) {
+		$this->folder = $folder;
+		parent::__construct(new FieldSet());
+	}
+		
+	public function getChildren() {
+		if($this->children->Count() == 0) {
+			$inlineFormAction = new InlineFormAction("delete_unused_thumbnails", _t('Folder.DELETEUNUSEDTHUMBNAILS', 'Delete unused thumbnails'));
+			$inlineFormAction->includeDefaultJS(false) ;
+
+			$this->children = new FieldSet(
+				new LiteralField( "UnusedAssets", "<h2>"._t('Folder.UNUSEDFILESTITLE', 'Unused files')."</h2>" ),
+				$this->getAssetList(),
+				new FieldGroup(
+					new LiteralField( "UnusedThumbnails", "<h2>"._t('Folder.UNUSEDTHUMBNAILSTITLE', 'Unused thumbnails')."</h2>"),
+					$inlineFormAction
+				)
+			);
+			$this->children->setForm($this->form);
+		}
+		return $this->children;
+	}
+	
+	public function FieldHolder() {
+		$output = "";
+		foreach($this->getChildren() as $child) {
+			$output .= $child->FieldHolder();
+		}
+		return $output;
+	}
+
+
 	/**
-	 * @return String
-	 */
-	function CMSTreeClasses($controller) {
-		$classes = sprintf('class-%s', $this->class);
-
-		if(!$this->canDelete())
-			$classes .= " nodelete";
-
-		if($controller->isCurrentPage($this))
-			$classes .= " current";
-
-		if(!$this->canEdit()) 
-			$classes .= " disabled";
-			
-		$classes .= $this->markingClasses();
-
-		return $classes;
+     * Creates table for displaying unused files.
+     *
+     * @returns AssetTableField
+     */
+	protected function getAssetList() {
+		$where = $this->folder->getUnusedFilesListFilter();
+        $assetList = new AssetTableField(
+            $this->folder,
+            "AssetList",
+            "File", 
+			array("Title" => _t('Folder.TITLE', "Title"), "LinkedURL" => _t('Folder.FILENAME', "Filename")), 
+            "",
+            $where
+        );
+		$assetList->setPopupCaption(_t('Folder.VIEWASSET', "View Asset"));
+        $assetList->setPermissions(array("show","delete"));
+        $assetList->Markable = false;
+        return $assetList;
 	}
 }
+?>

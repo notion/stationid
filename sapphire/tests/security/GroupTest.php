@@ -4,7 +4,7 @@
  * @subpackage tests
  */
 class GroupTest extends FunctionalTest {
-	static $fixture_file = 'GroupTest.yml';
+	static $fixture_file = 'sapphire/tests/security/GroupTest.yml';
 	
 	/**
 	 * Test the Group::map() function
@@ -14,11 +14,13 @@ class GroupTest extends FunctionalTest {
 		
 		// We will iterate over the map and build mapOuput to more easily call assertions on the result.
 		$map = Group::map();
-		$mapOutput = $map->getItems()->map('ID', 'Title');
+		foreach($map as $k => $v) {
+			$mapOutput[$k] = $v;
+		}
 		
 		$group1 = $this->objFromFixture('Group', 'group1');
 		$group2 = $this->objFromFixture('Group', 'group2');
-
+		
 		/* We have added 2 groups to our fixture.  They should both appear in $mapOutput. */
 		$this->assertEquals($mapOutput[$group1->ID], $group1->Title);
 		$this->assertEquals($mapOutput[$group2->ID], $group2->Title);
@@ -83,32 +85,6 @@ class GroupTest extends FunctionalTest {
 		
 		$this->assertNull(DataObject::get('Group', "\"ID\"={$adminGroup->ID}"), 'Group is removed');
 		$this->assertNull(DataObject::get('Permission',"\"GroupID\"={$adminGroup->ID}"), 'Permissions removed along with the group');
-	}
-	
-	function testCollateAncestorIDs() {
-		$parentGroup = $this->objFromFixture('Group', 'parentgroup');
-		$childGroup = $this->objFromFixture('Group', 'childgroup');
-		$orphanGroup = new Group();
-		$orphanGroup->ParentID = 99999;
-		$orphanGroup->write();
-		
-		$this->assertEquals(
-			array($parentGroup->ID), 
-			$parentGroup->collateAncestorIDs(),
-			'Root node only contains itself'
-		);
-		
-		$this->assertEquals(
-			array($childGroup->ID, $parentGroup->ID), 
-			$childGroup->collateAncestorIDs(),
-			'Contains parent nodes, with child node first'
-		);
-		
-		$this->assertEquals(
-			array($orphanGroup->ID), 
-			$orphanGroup->collateAncestorIDs(),
-			'Orphaned nodes dont contain invalid parent IDs'
-		);
 	}
 }
 

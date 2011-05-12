@@ -18,8 +18,7 @@ class TreeSelectorField extends FormField {
 		Requirements::javascript(SAPPHIRE_DIR . "/javascript/prototype_improvements.js");
 
 		Requirements::add_i18n_javascript(SAPPHIRE_DIR . '/javascript/lang');
-		Requirements::javascript(SAPPHIRE_DIR . "/thirdparty/jquery/jquery.js");
-		Requirements::javascript(SAPPHIRE_DIR . "/javascript/TreeDropdownField.js");
+		Requirements::javascript(SAPPHIRE_DIR . "/javascript/TreeSelectorField.js");
 		
 		$fieldName = $this->name;
 		if($this->form) {

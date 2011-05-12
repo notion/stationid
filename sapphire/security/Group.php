@@ -35,12 +35,6 @@ class Group extends DataObject {
 		"Hierarchy",
 	);
 	
-	function populateDefaults() {
-		parent::populateDefaults();
-		
-		if(!$this->Title) $this->Title = _t('SecurityAdmin.NEWGROUP',"New Group");
-	}
-	
 	function getAllChildren() {
 		$doSet = new DataObjectSet();
 
@@ -60,8 +54,6 @@ class Group extends DataObject {
 	 * @return FieldSet
 	 */
 	public function getCMSFields() {
-		Requirements::javascript(SAPPHIRE_DIR . '/javascript/PermissionCheckboxSetField.js');
-		
 		$fields = new FieldSet(
 			new TabSet("Root",
 				new Tab('Members', _t('SecurityAdmin.MEMBERS', 'Members'),
@@ -286,7 +278,7 @@ class Group extends DataObject {
 	 */
 	public function collateAncestorIDs() {
 		$parent = $this;
-		while(isset($parent) && $parent instanceof Group) {
+		while(isset($parent)) {
 			$items[] = $parent->ID;
 			$parent = $parent->Parent;
 		}
@@ -307,25 +299,24 @@ class Group extends DataObject {
 		return DataObject::get('Group', "\"Group\".\"ParentID\" = " . (int)$this->ID . " AND \"Group\".\"ID\" != " . (int)$this->ID, '"Sort"');
 	}
 	
-	/**
-	 * @deprecated 3.0 Use getTreeTitle()
-	 */
-	function TreeTitle() {
-		return $this->getTreeTitle();
-	}
-	
-	public function getTreeTitle() {
+	public function TreeTitle() {
 	    if($this->hasMethod('alternateTreeTitle')) return $this->alternateTreeTitle();
 		else return htmlspecialchars($this->Title, ENT_QUOTES);
 	}
 	
+	function CMSTreeClasses($controller) {
+		$classes = $this->class;
+
+		if(!$this->canEdit()) $classes .= " disabled";
+
+		return $classes;
+	}
+	
 	/**
 	 * Overloaded to ensure the code is always descent.
-	 * 
-	 * @param string
 	 */
 	public function setCode($val){
-		$this->setField("Code", Convert::raw2url($val));
+		$this->setField("Code",SiteTree::generateURLSegment($val));
 	}
 	
 	function onBeforeWrite() {
@@ -483,26 +474,6 @@ class Group extends DataObject {
 		}		
 		
 		// Members are populated through Member->requireDefaultRecords()
-	}
-
-	/**
-	 * @return String
-	 */
-	function CMSTreeClasses($controller) {
-		$classes = sprintf('class-%s', $this->class);
-
-		if(!$this->canDelete())
-			$classes .= " nodelete";
-
-		if($controller->isCurrentPage($this))
-			$classes .= " current";
-
-		if(!$this->canEdit()) 
-			$classes .= " disabled";
-			
-		$classes .= $this->markingClasses();
-
-		return $classes;
 	}
 }
 	

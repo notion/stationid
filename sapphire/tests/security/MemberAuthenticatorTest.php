@@ -4,9 +4,6 @@
  * @subpackage tests
  */
 class MemberAuthenticatorTest extends SapphireTest {
-	
-	protected $usesDatabase = true;
-	
 	function testLegacyPasswordHashMigrationUponLogin() {
 		$member = new Member();
 		

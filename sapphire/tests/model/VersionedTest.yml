@@ -1,4 +1,4 @@
-VersionedTest_DataObject:
+Page:
    page1:
       Title: Page 1
    page2:
@@ -6,14 +6,14 @@ VersionedTest_DataObject:
    page3:
       Title: Page 3
    page2a:
-      Parent: =>VersionedTest_DataObject.page2
+      Parent: =>Page.page2
       Title: Page 2a
    page2b:
-      Parent: =>VersionedTest_DataObject.page2
+      Parent: =>Page.page2
       Title: Page 2b
    page3a:
-      Parent: =>VersionedTest_DataObject.page3
+      Parent: =>Page.page3
       Title: Page 3a
    page3b:
-      Parent: =>VersionedTest_DataObject.page3
+      Parent: =>Page.page3
       Title: Page 3b

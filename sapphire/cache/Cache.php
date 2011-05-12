@@ -43,7 +43,6 @@
  * 
  * SS_Cache::pick_backend('primary_memcached', 'any', 10);
  * SS_Cache::pick_backend('default', 'aggregate', 20); // Aggregate needs a backend with tag support, which memcached doesn't provide
- * </code>
  * 
  * USING APC AND FILE AS TWO LEVEL STORE
  * 

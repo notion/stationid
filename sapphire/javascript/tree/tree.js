@@ -26,6 +26,10 @@
  * 
  */
 
+Function.prototype.create = function(item, arg1, arg2, arg3, arg4, arg5, arg6) {
+	return behaveAs(item, this, arg1, arg2, arg3, arg4, arg5, arg6);
+}
+
 Tree = Class.create();
 Tree.prototype = {
 	/*
@@ -147,7 +151,7 @@ Tree.prototype = {
 
 		// Remove from the old parent node - this will ensure that the classes of the old tree
 		// item are updated accordingly
-		if(child && child.parentTreeNode) {
+		if(child.parentTreeNode) {
 			var oldParent = child.parentTreeNode;
 			oldParent.removeTreeNode(child);
 		}
@@ -447,7 +451,6 @@ TreeNode.prototype = {
 		var obj = this;
 		
 		classes.each(function(className) {
-			var className = className.replace(/class-/, '');
 			if(_TREE_ICONS[className]) {
 				obj.fileIcon = _TREE_ICONS[className].fileIcon;
 				obj.openFolderIcon = _TREE_ICONS[className].openFolderIcon;
@@ -594,6 +597,14 @@ TreeNode.prototype = {
 		this.addNodeClass('children');
 		this.removeNodeClass('loading');
 		this.removeNodeClass('unexpanded');
+		
+		if (typeof(DropFileItem) !== 'undefined') {
+			// add new li elements as DropFileItem targets
+			list = ul.getElementsByTagName("li");
+			for ( var i=0; i<list.length; i++ ) {
+				behaveAs(list[i], DropFileItem);
+			}
+		}
 	}
 }
 
@@ -625,7 +636,6 @@ function treeOpenAll() {
 
 TreeNode_aTag_onclick = function(event) {
 	Event.stop(event);
-	jQuery(this.treeNode.tree).trigger('nodeclicked', {node: this.treeNode});
 	if(!this.treeNode.tree || this.treeNode.tree.notify('NodeClicked', this.treeNode)) {
 		if(this.treeNode.options.onselect) {
 			return this.treeNode.options.onselect.apply(this.treeNode, [event]);
@@ -921,5 +931,16 @@ MultiselectTree.prototype = {
 		selectedNode.selected = false;
 		delete this.selectedNodes[idx];
 	}
+	
+}
 
+
+/*
+ * Find the first child of el that is of type 'tag'
+ */
+function findChildWithTag(el, tag) {
+	for(var i=0;i<el.childNodes.length;i++) {
+		if(el.childNodes[i].tagName != null && el.childNodes[i].tagName.toLowerCase() == tag) return el.childNodes[i];
+	}
+	return null;
 }

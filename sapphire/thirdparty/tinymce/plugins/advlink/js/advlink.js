@@ -354,20 +354,22 @@ function setAttrib(elm, attrib, value) {
 
 	// Clean up the style
 	if (attrib == 'style')
-		value = dom.serializeStyle(dom.parseStyle(value), 'a');
+		value = dom.serializeStyle(dom.parseStyle(value));
 
 	dom.setAttrib(elm, attrib, value);
 }
 
 function getAnchorListHTML(id, target) {
-	var ed = tinyMCEPopup.editor, nodes = ed.dom.select('a'), name, i, len, html = "";
+	var inst = tinyMCEPopup.editor;
+	var nodes = inst.dom.select('a.mceItemAnchor,img.mceItemAnchor'), name, i;
+	var html = "";
 
 	html += '<select id="' + id + '" name="' + id + '" class="mceAnchorList" o2nfocus="tinyMCE.addSelectAccessibility(event, this, window);" onchange="this.form.' + target + '.value=';
 	html += 'this.options[this.selectedIndex].value;">';
 	html += '<option value="">---</option>';
 
-	for (i=0, len=nodes.length; i<len; i++) {
-		if ((name = ed.dom.getAttrib(nodes[i], "name")) != "")
+	for (i=0; i<nodes.length; i++) {
+		if ((name = inst.dom.getAttrib(nodes[i], "name")) != "")
 			html += '<option value="#' + name + '">' + name + '</option>';
 	}
 
@@ -387,6 +389,7 @@ function insertAction() {
 
 	// Remove element if there is no href
 	if (!document.forms[0].href.value) {
+		tinyMCEPopup.execCommand("mceBeginUndoLevel");
 		i = inst.selection.getBookmark();
 		inst.dom.remove(elm, 1);
 		inst.selection.moveToBookmark(i);
@@ -395,10 +398,12 @@ function insertAction() {
 		return;
 	}
 
+	tinyMCEPopup.execCommand("mceBeginUndoLevel");
+
 	// Create new anchor elements
 	if (elm == null) {
 		inst.getDoc().execCommand("unlink", false, null);
-		tinyMCEPopup.execCommand("mceInsertLink", false, "#mce_temp_url#", {skip_undo : 1});
+		tinyMCEPopup.execCommand("CreateLink", false, "#mce_temp_url#", {skip_undo : 1});
 
 		elementArray = tinymce.grep(inst.dom.select("a"), function(n) {return inst.dom.getAttrib(n, 'href') == '#mce_temp_url#';});
 		for (i=0; i<elementArray.length; i++)
@@ -420,7 +425,7 @@ function insertAction() {
 
 function setAllAttribs(elm) {
 	var formObj = document.forms[0];
-	var href = formObj.href.value.replace(/ /g, '%20');
+	var href = formObj.href.value;
 	var target = getSelectValue(formObj, 'targetlist');
 
 	setAttrib(elm, 'href', href);

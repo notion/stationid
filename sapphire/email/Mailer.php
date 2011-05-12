@@ -46,10 +46,11 @@ class Mailer extends Object {
 function htmlEmail($to, $from, $subject, $htmlContent, $attachedFiles = false, $customheaders = false, $plainContent = false, $inlineImages = false) {
 	if ($customheaders && is_array($customheaders) == false) {
 		echo "htmlEmail($to, $from, $subject, ...) could not send mail: improper \$customheaders passed:<BR>";
-		dieprintr($customheaders);
+		dieprintr($headers);
 	}
 
     
+	$subjectIsUnicode = (strpos($subject,"&#") !== false);
 	$bodyIsUnicode = (strpos($htmlContent,"&#") !== false);
     $plainEncoding = "";
 	
@@ -63,13 +64,15 @@ function htmlEmail($to, $from, $subject, $htmlContent, $attachedFiles = false, $
 
 	// If the subject line contains extended characters, we must encode the 
 	$subject = Convert::xml2raw($subject);
-	$subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+	if(isset($subjectIsUnicode) && $subjectIsUnicode)
+		$subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+
 
 	// Make the plain text part
 	$headers["Content-Type"] = "text/plain; charset=\"utf-8\"";
 	$headers["Content-Transfer-Encoding"] = $plainEncoding ? $plainEncoding : "quoted-printable";
 
-	$plainPart = processHeaders($headers, ($plainEncoding == "base64") ? chunk_split(base64_encode($plainContent),60) : wordwrap(QuotedPrintable_encode($plainContent),75));
+	$plainPart = processHeaders($headers, ($plainEncoding == "base64") ? chunk_split(base64_encode($plainContent),60) : wordwrap(QuotedPrintable_encode($plainContent),120));
 
 	// Make the HTML part
 	$headers["Content-Type"] = "text/html; charset=\"utf-8\"";
@@ -93,7 +96,7 @@ function htmlEmail($to, $from, $subject, $htmlContent, $attachedFiles = false, $
 		$htmlPart = wrapImagesInline($htmlContent);
 	} else {
 		$headers["Content-Transfer-Encoding"] = "quoted-printable";
-		$htmlPart = processHeaders($headers, wordwrap(QuotedPrintable_encode($htmlContent),75));
+		$htmlPart = processHeaders($headers, wordwrap(QuotedPrintable_encode($htmlContent),120));
 	}
 	
 	list($messageBody, $messageHeaders) = encodeMultipart(array($plainPart,$htmlPart), "multipart/alternative");
@@ -167,16 +170,21 @@ function htmlEmail($to, $from, $subject, $htmlContent, $attachedFiles = false, $
  * Send a plain text e-mail
  */
 function plaintextEmail($to, $from, $subject, $plainContent, $attachedFiles, $customheaders = false) {
+	$subjectIsUnicode = false;	
 	$plainEncoding = false; // Not ensurely where this is supposed to be set, but defined it false for now to remove php notices
 
 	if ($customheaders && is_array($customheaders) == false) {
 		echo "htmlEmail($to, $from, $subject, ...) could not send mail: improper \$customheaders passed:<BR>";
-		dieprintr($customheaders);
+		dieprintr($headers);
 	}
+
+	if(strpos($subject,"&#") !== false) $subjectIsUnicode = true;
 
 	// If the subject line contains extended characters, we must encode it
 	$subject = Convert::xml2raw($subject);
-	$subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+	if($subjectIsUnicode)
+		$subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+
 
 	// Make the plain text part
 	$headers["Content-Type"] = "text/plain; charset=\"utf-8\"";

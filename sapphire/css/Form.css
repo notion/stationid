@@ -70,7 +70,7 @@ form button.minorAction {
 	background: none;
 	padding: 0;
 	border: 0;
-	color: #0074C6;
+	color: #0074C6; /* same for "a" tag in cms/css/typography.css */
 	text-decoration: underline;
 }
 
@@ -142,7 +142,23 @@ form .message {
 		width:240px;
 		border-color: #FF4040;
 	}
+	
+	/** LOGIN FORM **/
 
-.typography .ss-tabset ul {
-	margin: 0;
+#Remember {
+	margin: 0.5em 0 0.5em 11em !important;
+}
+	p#Remember label {
+		display: inline-block;
+		margin: 0;
+	}
+	#Remember input {
+		float: left;
+		margin: 0 5px 0 0;
+	}
+#MemberLoginForm_LoginForm .Actions {
+	padding-left: 12em;
+}
+#ForgotPassword {
+	margin-top: 1em;
 }

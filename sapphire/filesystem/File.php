@@ -18,8 +18,7 @@
  * - "Name": File name (including extension) or folder name.
  *   Should be the same as the actual filesystem. 
  * - "Title": Optional title of the file (for display purposes only).
- *   Defaults to "Name". Note that the Title field of Folder (subclass of File)
- *   is linked to Name, so Name and Title will always be the same.
+ *   Defaults to "Name".
  * - "Filename": Path of the file or folder, relative to the webroot.
  *   Usually starts with the "assets/" directory, and has no trailing slash.
  *   Defaults to the "assets/" directory plus "Name" property if not set.
@@ -86,6 +85,10 @@ class File extends DataObject {
 	static $has_many = array();
 	
 	static $many_many = array();
+	
+	static $belongs_many_many = array(
+		"BackLinkTracking" => "SiteTree",
+	);
 	
 	static $defaults = array();
 	
@@ -164,19 +167,23 @@ class File extends DataObject {
 	function RelativeLink($action = null){
 		return $this->Filename;
 	}
+
+	function TreeTitle() {
+		return $this->Title;
+	}
 	
 	/**
-	 * @deprecated 3.0 Use getTreeTitle()
+	 * @todo Unnecessary shortcut for AssetTableField, coupled with cms module.
+	 * 
+	 * @return Integer
 	 */
-	function TreeTitle() {
-		return $this->getTreeTitle();
-	}
-
-	/**
-	 * @return string
-	 */
-	function getTreeTitle() {
-		return $this->Title;
+	function BackLinkTrackingCount() {
+		$pages = $this->BackLinkTracking();
+		if($pages) {
+			return $pages->Count();
+		} else {
+			return 0;
+		}
 	}
 
 	/**
@@ -192,6 +199,28 @@ class File extends DataObject {
 
 		if($this->Filename && $this->Name && file_exists($this->getFullPath()) && !is_dir($this->getFullPath())) {
 			unlink($this->getFullPath());
+		}
+	}
+	
+	/**
+	 * Updates link tracking.
+	 */
+	protected function onAfterDelete() {
+		parent::onAfterDelete();
+
+		$brokenPages = $this->BackLinkTracking();
+		if($brokenPages) {
+			$origStage = Versioned::current_stage();
+
+			// This will syncLinkTracking on draft
+			Versioned::reading_stage('Stage');
+			foreach($brokenPages as $brokenPage) $brokenPage->write();
+
+			// This will syncLinkTracking on published
+			Versioned::reading_stage('Live');
+			foreach($brokenPages as $brokenPage) $brokenPage->write();
+
+			Versioned::reading_stage($origStage);
 		}
 	}
 	
@@ -469,18 +498,31 @@ class File extends DataObject {
 	}
 
 	/**
+	 * Rewrite links to the $old file to now point to the $new file.
+	 * 
+	 * @uses SiteTree->rewriteFileURL()
+	 * 
 	 * @param String $old File path relative to the webroot
 	 * @param String $new File path relative to the webroot
 	 */
 	protected function updateLinks($old, $new) {
-		$this->extend('updateLinks', $old, $new);
+		if(class_exists('Subsite')) Subsite::disable_subsite_filter(true);
+	
+		$pages = $this->BackLinkTracking();
+
+		$summary = "";
+		if($pages) {
+			foreach($pages as $page) $page->rewriteFileURL($old,$new);
+		}
+		
+		if(class_exists('Subsite')) Subsite::disable_subsite_filter(false);
 	}
 
 	/**
 	 * Does not change the filesystem itself, please use {@link write()} for this.
 	 */
 	function setParentID($parentID) {
-		$this->setField('ParentID', (int)$parentID);
+		$this->setField('ParentID', $parentID);
 
 		// Don't change on the filesystem, we'll handle that in onBeforeWrite()
 		$this->setField('Filename', $this->getRelativePath()); 

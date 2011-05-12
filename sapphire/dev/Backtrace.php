@@ -75,13 +75,8 @@ class SS_Backtrace {
 	
 	/**
 	 * Return the full function name.  If showArgs is set to true, a string representation of the arguments will be shown
-	 * 
-	 * @param Object $item
-	 * @param boolean $showArg
-	 * @param Int $argCharLimit
-	 * @return String
 	 */
-	static function full_func_name($item, $showArgs = false, $argCharLimit = 10000) {
+	static function full_func_name($item, $showArgs = false) {
 		$funcName = '';
 		if(isset($item['class'])) $funcName .= $item['class'];
 		if(isset($item['type'])) $funcName .= $item['type'];
@@ -91,7 +86,7 @@ class SS_Backtrace {
 			$args = array();
 			foreach($item['args'] as $arg) {
 				if(!is_object($arg) || method_exists($arg, '__toString')) {
-					$args[] = (strlen((string)$arg) > $argCharLimit) ? substr((string)$arg, 0, $argCharLimit) . '...' : (string)$arg;
+					$args[] = (string) $arg;
 				} else {
 					$args[] = get_class($arg);
 				}
@@ -125,7 +120,7 @@ class SS_Backtrace {
 				} else {
 					$name = self::full_func_name($item,true);
 				}
-				$result .= "<li><b>" . htmlentities($name, ENT_COMPAT, 'UTF-8') . "</b>\n<br />\n";
+				$result .= "<li><b>" . htmlentities($name) . "</b>\n<br />\n";
 				$result .= isset($item['line']) ? "Line $item[line] of " : '';
 				$result .=  isset($item['file']) ? htmlentities(basename($item['file'])) : ''; 
 				$result .= "</li>\n";

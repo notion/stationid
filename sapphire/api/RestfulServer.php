@@ -123,10 +123,6 @@ class RestfulServer extends Controller {
 	 */
 	protected $member;
 	
-	static $allowed_actions = array(
-		'index'
-	);
-	
 	/*
 	function handleItem($request) {
 		return new RestfulServer_Item(DataObject::get_by_id($request->param("ClassName"), $request->param("ID")));

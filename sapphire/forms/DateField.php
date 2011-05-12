@@ -46,17 +46,6 @@ require_once 'Zend/Date.php';
  * @subpackage fields-datetime
  */
 class DateField extends TextField {
-
-	/**
-	 * @var array
-	 */
-	protected static $default_config = array(
-		'showcalendar' => false,
-		'dmyfields' => false,
-		'dmyseparator' => false,
-		'dateformat' => false,
-		'locale' => false
-	);
 	
 	/**
 	 * @var array
@@ -91,15 +80,6 @@ class DateField extends TextField {
 		
 		if(!$this->getConfig('dateformat')) {
 			$this->setConfig('dateformat', i18n::get_date_format());
-		}
-		
-		foreach (self::$default_config AS $defaultK => $defaultV) {
-			if ($defaultV) {
-				if ($defaultK=='locale')
-					$this->locale = $defaultV;
-				else
-					$this->setConfig($defaultK, $defaultV);
-			}
 		}
 
 		parent::__construct($name, $title, $value, $form, $rightTitle);
@@ -340,19 +320,6 @@ JS;
 			&& (!$val['day'] || Zend_Date::isDate($val['day'], 'dd', $this->locale))
 		);
 	}
-	
-	/**
-	 * @param String $k
-	 * @param mixed $v
-	 * @return boolean
-	 */
-	static function set_default_config($k, $v) {
-	  if (array_key_exists($k,self::$default_config)) {
-		self::$default_config[$k]=$v;
-		return true;
-	  }
-	  return false;
-	}
 
 	/**
 	 * @return Boolean
@@ -580,8 +547,9 @@ class DateField_View_JQuery {
 		if($this->getField()->getConfig('showcalendar')) {
 			Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 			Requirements::javascript(SAPPHIRE_DIR . '/javascript/jquery_improvements.js');	
-			Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/smoothness/jquery-ui.css');
-			Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-ui/jquery-ui.js');
+			Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/smoothness/jquery.ui.all.css');
+			Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-ui/jquery.ui.core.js');
+			Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-ui/jquery.ui.datepicker.js');
 			
 			// Include language files (if required)
 			$lang = $this->getLang();
@@ -589,7 +557,7 @@ class DateField_View_JQuery {
 				// TODO Check for existence of locale to avoid unnecessary 404s from the CDN
 				Requirements::javascript(
 					sprintf(
-						THIRDPARTY_DIR . '/jquery-ui/minified/i18n/jquery.ui.datepicker-%s.min.js',
+						THIRDPARTY_DIR . '/jquery-ui/i18n/jquery.ui.datepicker-%s.js',
 						// can be a mix between names (e.g. 'de') and combined locales (e.g. 'zh-TW')
 						$lang
 					));

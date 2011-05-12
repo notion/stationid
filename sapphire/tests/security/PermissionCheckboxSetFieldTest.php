@@ -4,7 +4,7 @@
  * @subpackage tests
  */
 class PermissionCheckboxSetFieldTest extends SapphireTest {
-	static $fixture_file = 'PermissionCheckboxSetFieldTest.yml';
+	static $fixture_file = 'sapphire/tests/security/PermissionCheckboxSetFieldTest.yml';
 	
 	function testHiddenPermissions() {
 		$f = new PermissionCheckboxSetField(
@@ -14,14 +14,14 @@ class PermissionCheckboxSetFieldTest extends SapphireTest {
 			'GroupID'
 		);
 		$f->setHiddenPermissions(
-			array('NON-ADMIN')
+			array('CMS_ACCESS_ReportAdmin')
 		);
 		$this->assertEquals(
 			$f->getHiddenPermissions(),
-			array('NON-ADMIN')
+			array('CMS_ACCESS_ReportAdmin')
 		);
-		$this->assertContains('ADMIN', $f->Field());
-		$this->assertNotContains('NON-ADMIN', $f->Field());
+		$this->assertContains('CMS_ACCESS_CMSMain', $f->Field());
+		$this->assertNotContains('CMS_ACCESS_ReportAdmin', $f->Field());
 	}
 	
 	function testSaveInto() {
@@ -53,7 +53,7 @@ class PermissionCheckboxSetFieldTest extends SapphireTest {
 		// add some permissions
 		$field->setValue(array(
 			'ADMIN'=>true,
-			'NON-ADMIN'=>true
+			'CMS_ACCESS_AssetAdmin'=>true
 		));
 
 		$field->saveInto($group);
@@ -61,7 +61,7 @@ class PermissionCheckboxSetFieldTest extends SapphireTest {
 		$untouchable->flushCache();
 		$this->assertEquals($group->Permissions()->Count(), 2, 'The tested group has two permissions permission');
 		$this->assertEquals($group->Permissions("\"Code\"='ADMIN'")->Count(), 1, 'The tested group has ADMIN permission');
-		$this->assertEquals($group->Permissions("\"Code\"='NON-ADMIN'")->Count(), 1, 'The tested group has CMS_ACCESS_AssetAdmin permission');
+		$this->assertEquals($group->Permissions("\"Code\"='CMS_ACCESS_AssetAdmin'")->Count(), 1, 'The tested group has CMS_ACCESS_AssetAdmin permission');
 
 		$this->assertEquals($untouchable->Permissions()->Count(), 1, 'The other group has one permission');
 		$this->assertEquals($untouchable->Permissions("\"Code\"='ADMIN'")->Count(), 1, 'The other group has ADMIN permission');

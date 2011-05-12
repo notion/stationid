@@ -1,7 +1,7 @@
 <?php
 
 class TableFieldTest extends SapphireTest {
-	static $fixture_file = 'TableFieldTest.yml';
+	static $fixture_file = 'sapphire/tests/forms/TableFieldTest.yml';
 
 	protected $extraDataObjects = array(
 		'TableFieldTest_Object',
@@ -39,8 +39,8 @@ class TableFieldTest extends SapphireTest {
 		$tableField->setValue(array(
 			'new' => array(
 				'Code' => array(
-					'CustomPerm1',
-					'CustomPerm2',
+					'CMS_ACCESS_CMSMain',
+					'CMS_ACCESS_AssetAdmin',
 				),
 				'Arg' => array(
 					'1',
@@ -53,8 +53,8 @@ class TableFieldTest extends SapphireTest {
 		// Let's check that the 2 permissions entries have been saved
 		$permissions = $group->Permissions()->toDropdownMap('Arg', 'Code');
 		$this->assertEquals(array(
-			1 => 'CustomPerm1',
-			2 => 'CustomPerm2',
+			1 => 'CMS_ACCESS_CMSMain',
+			2 => 'CMS_ACCESS_AssetAdmin',
 		), $permissions);
 		
 
@@ -65,7 +65,7 @@ class TableFieldTest extends SapphireTest {
 		}
 		$value['new'] = array(
 			'Code' => array(
-				'CustomPerm3',
+				'CMS_ACCESS_NewsletterAdmin',
 			),
 			'Arg' => array(
 				'3',
@@ -77,9 +77,9 @@ class TableFieldTest extends SapphireTest {
 		// Let's check that the 2 existing permissions entries, and the 1 new one, have been saved
 		$permissions = $group->Permissions()->toDropdownMap('Arg', 'Code');
 		$this->assertEquals(array(
-			1 => 'CustomPerm1',
-			2 => 'CustomPerm2',
-			3 => 'CustomPerm3',
+			1 => 'CMS_ACCESS_CMSMain',
+			2 => 'CMS_ACCESS_AssetAdmin',
+			3 => 'CMS_ACCESS_NewsletterAdmin',
 		), $permissions);
 
 	}
@@ -288,7 +288,7 @@ class TableFieldTest extends SapphireTest {
 /**
  * Stub controller
  */
-class TableFieldTest_Controller extends Controller implements TestOnly {
+class TableFieldTest_Controller extends Controller {
 	function Link($action = null) {
 		return Controller::join_links('TableFieldTest/', $action);
 	}

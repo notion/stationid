@@ -1,11 +1,5 @@
-/**
- * File: WidgetAreaEditor.js
- */
-
-/**
- * Class: WidgetAreaEditorClass
- */
 WidgetAreaEditorClass = Class.create();
+
 WidgetAreaEditorClass.prototype = {
 	initialize: function() {
 		this.name = this.getAttribute('name');
@@ -54,8 +48,7 @@ WidgetAreaEditorClass.prototype = {
 		}
 
 		// Ensure correct sort values are written when page is saved
-		// TODO Adjust to new event listeners
-		jQuery('#Form_EditForm').bind('ajaxsubmit', this.beforeSave.bind(this));
+		$('Form_EditForm').observeMethod('BeforeSave', this.beforeSave.bind(this));
 	},
 	
 	rewriteWidgetAreaAttributes: function() {
@@ -70,18 +63,13 @@ WidgetAreaEditorClass.prototype = {
 				if (!widget.getAttribute('rewritten') && (widget.id || widget.name)) {
 					if (widget.id && widget.id.indexOf('Widget[') === 0) {
 						var newValue = widget.id.replace(/Widget\[/, 'Widget['+name+'][');
-						//console.log('Renaming '+widget.tagName+' ID '+widget.id+' to '+newValue);
 						widget.id = newValue;
 					}
 					if (widget.name && widget.name.indexOf('Widget[') === 0) {
 						var newValue = widget.name.replace(/Widget\[/, 'Widget['+name+'][');
-						//console.log('Renaming '+widget.tagName+' Name '+widget.name+' to '+newValue);
 						widget.name = newValue;
 					}
 					widget.setAttribute('rewritten', 'yes');
-				}
-				else {
-					//console.log('Skipping '+(widget.id ? widget.id : (widget.name ? widget.name : 'unknown '+widget.tagName)));
 				}
 			}
 		}
@@ -122,14 +110,12 @@ WidgetAreaEditorClass.prototype = {
 		
 		
 		this.name = holder;
-		jQuery.ajax({
-			'url': 'Widget_Controller/EditableSegment/' + className, 
-			'success' : $('usedWidgets-'+holder).parentNode.parentNode.insertWidgetEditor.bind(this)
+		new Ajax.Request('Widget_Controller/EditableSegment/' + className, {
+			onSuccess : $('usedWidgets-'+holder).parentNode.parentNode.insertWidgetEditor.bind(this)
 		});
 	},
 
 	updateWidgets: function() {
-		var self = this;
 
 		// Gotta get the name of the current dohickey based off the ID
 		this.name = this.element.id.split('-').pop();
@@ -151,11 +137,8 @@ WidgetAreaEditorClass.prototype = {
 				var wIdArray = widget.id.split('-');
 				wIdArray.pop();
 
-				jQuery.ajax({
-					'url': 'Widget_Controller/EditableSegment/' + wIdArray.join('-'),
-					'success' : function() {
-						$('usedWidgets-'+self.name).parentNode.parentNode.insertWidgetEditor();
-					}
+				new Ajax.Request('Widget_Controller/EditableSegment/' + wIdArray.join('-'), {
+					onSuccess : $('usedWidgets-'+this.name).parentNode.parentNode.insertWidgetEditor.bind(this)
 				});
 			}
 		}
@@ -218,10 +201,8 @@ WidgetAreaEditorClass.prototype = {
 	}
 }
 
-/**
- * Class: UsedWidget
- */
 UsedWidget = Class.create();
+
 UsedWidget.prototype = {
 	initialize: function() {
 		// Call deleteWidget when delete button is pushed
@@ -252,9 +233,6 @@ UsedWidget.prototype = {
 	}
 }
 
-/**
- * Class: AvailableWidgetHeader
- */
 AvailableWidgetHeader = Class.create();
 AvailableWidgetHeader.prototype = {
 	onclick: function(event) {
@@ -264,16 +242,15 @@ AvailableWidgetHeader.prototype = {
 		$('WidgetAreaEditor-'+widgetArea).addWidget(className, widgetArea);
 	}
 }
+
 AvailableWidgetHeader.applyTo('div.availableWidgets .Widget h3');
 
-/**
- * Class: WidgetTreeDropdownField
- */
 WidgetTreeDropdownField = Class.extend('TreeDropdownField');
 WidgetTreeDropdownField.prototype = {
 	getName: function() {
 		return 'Widget_TDF_Endpoint';
 	}
 }
+
 WidgetTreeDropdownField.applyTo('div.usedWidgets .TreeDropdownField');
 WidgetAreaEditorClass.applyTo('.WidgetAreaEditor');

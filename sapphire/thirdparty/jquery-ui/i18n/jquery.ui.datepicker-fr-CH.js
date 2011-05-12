@@ -1,15 +1,15 @@
-ï»¿/* Swiss-French initialisation for the jQuery UI date picker plugin. */
+/* Swiss-French initialisation for the jQuery UI date picker plugin. */
 /* Written Martin Voelkle (martin.voelkle@e-tc.ch). */
 jQuery(function($){
 	$.datepicker.regional['fr-CH'] = {
 		closeText: 'Fermer',
-		prevText: '&#x3c;PrÃ©c',
+		prevText: '&#x3c;Préc',
 		nextText: 'Suiv&#x3e;',
 		currentText: 'Courant',
-		monthNames: ['Janvier','FÃ©vrier','Mars','Avril','Mai','Juin',
-		'Juillet','AoÃ»t','Septembre','Octobre','Novembre','DÃ©cembre'],
-		monthNamesShort: ['Jan','FÃ©v','Mar','Avr','Mai','Jun',
-		'Jul','AoÃ»','Sep','Oct','Nov','DÃ©c'],
+		monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin',
+		'Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+		monthNamesShort: ['Jan','Fév','Mar','Avr','Mai','Jun',
+		'Jul','Aoû','Sep','Oct','Nov','Déc'],
 		dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
 		dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
 		dayNamesMin: ['Di','Lu','Ma','Me','Je','Ve','Sa'],

@@ -72,33 +72,31 @@ class HtmlEditorField extends TextareaField {
 		
 		$htmlValue = new SS_HTMLValue($this->value);
 		
-		if(class_exists('SiteTree')) {
-			// Populate link tracking for internal links & links to asset files.
-			if($links = $htmlValue->getElementsByTagName('a')) foreach($links as $link) {
-				$href = Director::makeRelative($link->getAttribute('href'));
-
-				if($href) {
-					if(preg_match('/\[sitetree_link id=([0-9]+)\]/i', $href, $matches)) {
-						$ID = $matches[1];
-
-						// clear out any broken link classes
-						if($class = $link->getAttribute('class')) {
-							$link->setAttribute('class', preg_replace('/(^ss-broken|ss-broken$| ss-broken )/', null, $class));
-						}
-
-						$linkedPages[] = $ID;
-						if(!DataObject::get_by_id('SiteTree', $ID))  $record->HasBrokenLink = true;
-
-					} else if(substr($href, 0, strlen(ASSETS_DIR) + 1) == ASSETS_DIR.'/') {
-						$candidateFile = File::find(Convert::raw2sql(urldecode($href)));
-						if($candidateFile) {
-							$linkedFiles[] = $candidateFile->ID;
-						} else {
-							$record->HasBrokenFile = true;
-						}
-					} else if($href == '' || $href[0] == '/') {
-						$record->HasBrokenLink = true;
+		// Populate link tracking for internal links & links to asset files.
+		if($links = $htmlValue->getElementsByTagName('a')) foreach($links as $link) {
+			$href = Director::makeRelative($link->getAttribute('href'));
+			
+			if($href) {
+				if(preg_match('/\[sitetree_link id=([0-9]+)\]/i', $href, $matches)) {
+					$ID = $matches[1];
+					
+					// clear out any broken link classes
+					if($class = $link->getAttribute('class')) {
+						$link->setAttribute('class', preg_replace('/(^ss-broken|ss-broken$| ss-broken )/', null, $class));
 					}
+					
+					$linkedPages[] = $ID;
+					if(!DataObject::get_by_id('SiteTree', $ID))  $record->HasBrokenLink = true;
+
+				} else if(substr($href, 0, strlen(ASSETS_DIR) + 1) == ASSETS_DIR.'/') {
+					$candidateFile = File::find(Convert::raw2sql(urldecode($href)));
+					if($candidateFile) {
+						$linkedFiles[] = $candidateFile->ID;
+					} else {
+						$record->HasBrokenFile = true;
+					}
+				} else if($href == '' || $href[0] == '/') {
+					$record->HasBrokenLink = true;
 				}
 			}
 		}
@@ -140,26 +138,24 @@ class HtmlEditorField extends TextareaField {
 		}
 		
 		// Save file & link tracking data.
-		if(class_exists('SiteTree')) {
-			if($record->ID && $record->many_many('LinkTracking') && $tracker = $record->LinkTracking()) {
-				$filter = sprintf('"FieldName" = \'%s\' AND "SiteTreeID" = %d', $this->name, $record->ID);
-				DB::query("DELETE FROM \"$tracker->tableName\" WHERE $filter");
+		if($record->ID && $record->many_many('LinkTracking') && $tracker = $record->LinkTracking()) {
+			$filter = sprintf('"FieldName" = \'%s\' AND "SiteTreeID" = %d', $this->name, $record->ID);
+			DB::query("DELETE FROM \"$tracker->tableName\" WHERE $filter");
 
-				if($linkedPages) foreach($linkedPages as $item) {
-					$SQL_fieldName = Convert::raw2sql($this->name);
-					DB::query("INSERT INTO \"SiteTree_LinkTracking\" (\"SiteTreeID\",\"ChildID\", \"FieldName\")
-						VALUES ($record->ID, $item, '$SQL_fieldName')");
-				}
+			if($linkedPages) foreach($linkedPages as $item) {
+				$SQL_fieldName = Convert::raw2sql($this->name);
+				DB::query("INSERT INTO \"SiteTree_LinkTracking\" (\"SiteTreeID\",\"ChildID\", \"FieldName\")
+					VALUES ($record->ID, $item, '$SQL_fieldName')");
 			}
+		}
+		
+		if($record->ID && $record->many_many('ImageTracking') && $tracker = $record->ImageTracking()) {
+			$filter = sprintf('"FieldName" = \'%s\' AND "SiteTreeID" = %d', $this->name, $record->ID);
+			DB::query("DELETE FROM \"$tracker->tableName\" WHERE $filter");
 
-			if($record->ID && $record->many_many('ImageTracking') && $tracker = $record->ImageTracking()) {
-				$filter = sprintf('"FieldName" = \'%s\' AND "SiteTreeID" = %d', $this->name, $record->ID);
-				DB::query("DELETE FROM \"$tracker->tableName\" WHERE $filter");
-
-				$fieldName = $this->name;
-				if($linkedFiles) foreach($linkedFiles as $item) {
-					$tracker->add($item, array('FieldName' => $this->name));
-				}
+			$fieldName = $this->name;
+			if($linkedFiles) foreach($linkedFiles as $item) {
+				$tracker->add($item, array('FieldName' => $this->name));
 			}
 		}
 		
@@ -238,32 +234,27 @@ class HtmlEditorField_Toolbar extends RequestHandler {
 			$this->controller,
 			"{$this->name}/LinkForm", 
 			new FieldSet(
-				new LiteralField(
-					'Heading', 
-					sprintf('<h3>%s</h3>', _t('HtmlEditorField.LINK', 'Link'))
+				new LiteralField('Heading', '<h2><img src="cms/images/closeicon.gif" alt="' . _t('HtmlEditorField.CLOSE', 'close').'" title="' . _t('HtmlEditorField.CLOSE', 'close') . '" />' . _t('HtmlEditorField.LINK', 'Link') . '</h2>'),
+				new OptionsetField(
+					'LinkType',
+					_t('HtmlEditorField.LINKTO', 'Link to'), 
+					array(
+						'internal' => _t('HtmlEditorField.LINKINTERNAL', 'Page on the site'),
+						'external' => _t('HtmlEditorField.LINKEXTERNAL', 'Another website'),
+						'anchor' => _t('HtmlEditorField.LINKANCHOR', 'Anchor on this page'),
+						'email' => _t('HtmlEditorField.LINKEMAIL', 'Email address'),
+						'file' => _t('HtmlEditorField.LINKFILE', 'Download a file'),			
+					)
 				),
-				$contentComposite = new CompositeField(
-					new OptionsetField(
-						'LinkType',
-						_t('HtmlEditorField.LINKTO', 'Link to'), 
-						array(
-							'internal' => _t('HtmlEditorField.LINKINTERNAL', 'Page on the site'),
-							'external' => _t('HtmlEditorField.LINKEXTERNAL', 'Another website'),
-							'anchor' => _t('HtmlEditorField.LINKANCHOR', 'Anchor on this page'),
-							'email' => _t('HtmlEditorField.LINKEMAIL', 'Email address'),
-							'file' => _t('HtmlEditorField.LINKFILE', 'Download a file'),			
-						)
-					),
-					$siteTree,
-					new TextField('external', _t('HtmlEditorField.URL', 'URL'), 'http://'),
-					new EmailField('email', _t('HtmlEditorField.EMAIL', 'Email address')),
-					new TreeDropdownField('file', _t('HtmlEditorField.FILE', 'File'), 'File', 'Filename', 'Title', true),
-					new TextField('Anchor', _t('HtmlEditorField.ANCHORVALUE', 'Anchor')),
-					new TextField('LinkText', _t('HtmlEditorField.LINKTEXT', 'Link text')),
-					new TextField('Description', _t('HtmlEditorField.LINKDESCR', 'Link description')),
-					new CheckboxField('TargetBlank', _t('HtmlEditorField.LINKOPENNEWWIN', 'Open link in a new window?')),
-					new HiddenField('Locale', null, $this->controller->Locale)
-				)
+				$siteTree,
+				new TextField('external', _t('HtmlEditorField.URL', 'URL'), 'http://'),
+				new EmailField('email', _t('HtmlEditorField.EMAIL', 'Email address')),
+				new TreeDropdownField('file', _t('HtmlEditorField.FILE', 'File'), 'File', 'Filename', 'Title', true),
+				new TextField('Anchor', _t('HtmlEditorField.ANCHORVALUE', 'Anchor')),
+				new TextField('LinkText', _t('HtmlEditorField.LINKTEXT', 'Link text')),
+				new TextField('Description', _t('HtmlEditorField.LINKDESCR', 'Link description')),
+				new CheckboxField('TargetBlank', _t('HtmlEditorField.LINKOPENNEWWIN', 'Open link in a new window?')),
+				new HiddenField('Locale', null, $this->controller->Locale)
 			),
 			new FieldSet(
 				new FormAction('insert', _t('HtmlEditorField.BUTTONINSERTLINK', 'Insert link')),
@@ -271,9 +262,6 @@ class HtmlEditorField_Toolbar extends RequestHandler {
 			)
 		);
 		
-		$contentComposite->addExtraClass('content');
-		
-		$form->unsetValidator();
 		$form->loadDataFrom($this);
 		
 		$this->extend('updateLinkForm', $form);
@@ -288,43 +276,33 @@ class HtmlEditorField_Toolbar extends RequestHandler {
 	 * @return Form
 	 */
 	function ImageForm() {
-		if(!class_exists('ThumbnailStripField')) {
-			throw new Exception('ThumbnailStripField class required for HtmlEditorField->ImageForm()');
-		}
-		
 		$fields = new FieldSet(
-			new LiteralField(
-				'Heading', 
-				sprintf('<h3>%s</h3>', _t('HtmlEditorField.IMAGE', 'Image'))
-			),
-			
-			$contentComposite = new CompositeField(
-				new TreeDropdownField('FolderID', _t('HtmlEditorField.FOLDER', 'Folder'), 'Folder'),
-				new CompositeField(new FieldSet(
-					new LiteralField('ShowUpload', '<p class="showUploadField"><a href="#">'. _t('HtmlEditorField.SHOWUPLOADFORM', 'Upload File') .'</a></p>'),
-					new FileField("Files[0]" , _t('AssetAdmin.CHOOSEFILE','Choose file: ')),
-						new LiteralField('Response', '<div id="UploadFormResponse"></div>'),
-						new HiddenField('UploadMode', 'Upload Mode', 'CMSEditor') // used as a hook for doUpload switching
-				)),
-				new TextField('getimagesSearch', _t('HtmlEditorField.SEARCHFILENAME', 'Search by file name')),
-				new ThumbnailStripField('FolderImages', 'FolderID', 'getimages'),
-				new TextField('AltText', _t('HtmlEditorField.IMAGEALTTEXT', 'Alternative text (alt) - shown if image cannot be displayed'), '', 80),
-				new TextField('ImageTitle', _t('HtmlEditorField.IMAGETITLE', 'Title text (tooltip) - for additional information about the image')),
-				new TextField('CaptionText', _t('HtmlEditorField.CAPTIONTEXT', 'Caption text')),
-				new DropdownField(
-					'CSSClass',
-					_t('HtmlEditorField.CSSCLASS', 'Alignment / style'),
-					array(
-						'left' => _t('HtmlEditorField.CSSCLASSLEFT', 'On the left, with text wrapping around.'),
-						'leftAlone' => _t('HtmlEditorField.CSSCLASSLEFTALONE', 'On the left, on its own.'),
-						'right' => _t('HtmlEditorField.CSSCLASSRIGHT', 'On the right, with text wrapping around.'),
-						'center' => _t('HtmlEditorField.CSSCLASSCENTER', 'Centered, on its own.'),
-					)
-				),
-				new FieldGroup(_t('HtmlEditorField.IMAGEDIMENSIONS', 'Dimensions'),
-					new TextField('Width', _t('HtmlEditorField.IMAGEWIDTHPX', 'Width'), 100),
-					new TextField('Height', " x " . _t('HtmlEditorField.IMAGEHEIGHTPX', 'Height'), 100)
+			new LiteralField('Heading', '<h2><img src="cms/images/closeicon.gif" alt="' . _t('HtmlEditorField.CLOSE', 'close') . '" title="' . _t('HtmlEditorField.CLOSE', 'close') . '" />' . _t('HtmlEditorField.IMAGE', 'Image') . '</h2>'),
+			new TreeDropdownField('FolderID', _t('HtmlEditorField.FOLDER', 'Folder'), 'Folder'),
+			new CompositeField(new FieldSet(
+				new LiteralField('ShowUpload', '<p class="showUploadField"><a href="#">'. _t('HtmlEditorField.SHOWUPLOADFORM', 'Upload File') .'</a></p>'),
+				new FileField("Files[0]" , _t('AssetAdmin.CHOOSEFILE','Choose file: ')),
+				new LiteralField('Response', '<div id="UploadFormResponse"></div>'),
+				new HiddenField('UploadMode', 'Upload Mode', 'CMSEditor') // used as a hook for doUpload switching
+			)),
+			new TextField('getimagesSearch', _t('HtmlEditorField.SEARCHFILENAME', 'Search by file name')),
+			new ThumbnailStripField('FolderImages', 'FolderID', 'getimages'),
+			new TextField('AltText', _t('HtmlEditorField.IMAGEALTTEXT', 'Alternative text (alt) - shown if image cannot be displayed'), '', 80),
+			new TextField('ImageTitle', _t('HtmlEditorField.IMAGETITLE', 'Title text (tooltip) - for additional information about the image')),
+			new TextField('CaptionText', _t('HtmlEditorField.CAPTIONTEXT', 'Caption text')),
+			new DropdownField(
+				'CSSClass',
+				_t('HtmlEditorField.CSSCLASS', 'Alignment / style'),
+				array(
+					'left' => _t('HtmlEditorField.CSSCLASSLEFT', 'On the left, with text wrapping around.'),
+					'leftAlone' => _t('HtmlEditorField.CSSCLASSLEFTALONE', 'On the left, on its own.'),
+					'right' => _t('HtmlEditorField.CSSCLASSRIGHT', 'On the right, with text wrapping around.'),
+					'center' => _t('HtmlEditorField.CSSCLASSCENTER', 'Centered, on its own.'),
 				)
+			),
+			new FieldGroup(_t('HtmlEditorField.IMAGEDIMENSIONS', 'Dimensions'),
+				new TextField('Width', _t('HtmlEditorField.IMAGEWIDTHPX', 'Width'), 100),
+				new TextField('Height', " x " . _t('HtmlEditorField.IMAGEHEIGHTPX', 'Height'), 100)
 			)
 		);
 		
@@ -339,53 +317,41 @@ class HtmlEditorField_Toolbar extends RequestHandler {
 			$actions
 		);
 		
-		$contentComposite->addExtraClass('content');
+		$form->disableSecurityToken();
+		$form->loadDataFrom($this);
 		
 		// Allow other people to extend the fields being added to the imageform 
 		$this->extend('updateImageForm', $form);
-		
-		$form->unsetValidator();
-		$form->disableSecurityToken();
-		$form->loadDataFrom($this);
 		
 		return $form;
 	}
 
 	function FlashForm() {
-		if(!class_exists('ThumbnailStripField')) {
-			throw new Exception('ThumbnailStripField class required for HtmlEditorField->FlashForm()');
-		}
-		
 		$form = new Form(
 			$this->controller,
 			"{$this->name}/FlashForm", 
 			new FieldSet(
-				new LiteralField(
-					'Heading', 
-					sprintf('<h3>%s</h3>', _t('HtmlEditorField.FLASH', 'Flash'))
-				),
-				$contentComposite = new CompositeField(
-					new TreeDropdownField("FolderID", _t('HtmlEditorField.FOLDER'), "Folder"),
-					new TextField('getflashSearch', _t('HtmlEditorField.SEARCHFILENAME', 'Search by file name')),
-					new ThumbnailStripField("Flash", "FolderID", "getflash"),
-					new FieldGroup(_t('HtmlEditorField.IMAGEDIMENSIONS', "Dimensions"),
-						new TextField("Width", _t('HtmlEditorField.IMAGEWIDTHPX', "Width"), 100),
-						new TextField("Height", "x " . _t('HtmlEditorField.IMAGEHEIGHTPX', "Height"), 100)
-					)
+				new LiteralField('Heading', '<h2><img src="cms/images/closeicon.gif" alt="'._t('HtmlEditorField.CLOSE', 'close').'" title="'._t('HtmlEditorField.CLOSE', 'close').'" />'._t('HtmlEditorField.FLASH', 'Flash').'</h2>'),
+				new TreeDropdownField("FolderID", _t('HtmlEditorField.FOLDER'), "Folder"),
+				new TextField('getflashSearch', _t('HtmlEditorField.SEARCHFILENAME', 'Search by file name')),
+				new ThumbnailStripField("Flash", "FolderID", "getflash"),
+				new FieldGroup(_t('HtmlEditorField.IMAGEDIMENSIONS', "Dimensions"),
+					new TextField("Width", _t('HtmlEditorField.IMAGEWIDTHPX', "Width"), 100),
+					new TextField("Height", "x " . _t('HtmlEditorField.IMAGEHEIGHTPX', "Height"), 100)
 				)
 			),
 			new FieldSet(
 				new FormAction("insertflash", _t('HtmlEditorField.BUTTONINSERTFLASH', 'Insert Flash'))
 			)
-		);		
-		$contentComposite->addExtraClass('content');
-		
-		$this->extend('updateFlashForm', $form);
-		
-		$form->unsetValidator();
+		);
+
+		$form->disableSecurityToken();
 		$form->loadDataFrom($this);
 		$form->disableSecurityToken();
+		
+		$this->extend('updateFlashForm', $form);
 		
 		return $form;
 	}
 }
+

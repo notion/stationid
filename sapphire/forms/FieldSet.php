@@ -112,25 +112,23 @@ class FieldSet extends DataObjectSet {
 	 * This function will create any missing tabs.
 	 * @param array $fields An array of {@link FormField} objects.
 	 */
-	public function addFieldsToTab($tabName, $fields, $insertBefore = null) {
+	public function addFieldsToTab($tabName, $fields) {
 		$this->flushFieldsCache();
 
 		// Find the tab
 		$tab = $this->findOrMakeTab($tabName);
-
+		
 		// Add the fields to the end of this set
 		foreach($fields as $field) {
 			// Check if a field by the same name exists in this tab
-			if($insertBefore) {
-				$tab->insertBefore($field, $insertBefore);
-			} elseif($tab->fieldByName($field->Name())) {
+			if($tab->fieldByName($field->Name())) {
 				// It exists, so we need to replace the old one
 				$this->replaceField($field->Name(), $field);
 			} else {
 				$tab->push($field);
 			}
 		}
-	}
+	}	
 
 	/**
 	 * Remove the given field from the given tab in the field.

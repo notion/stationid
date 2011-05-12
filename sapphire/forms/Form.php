@@ -1005,6 +1005,7 @@ class Form extends RequestHandler {
 	function saveInto(DataObjectInterface $dataObject, $fieldList = null) {
 		$dataFields = $this->fields->saveableFields();
 		$lastField = null;
+
 		if($dataFields) foreach($dataFields as $field) {
 			// Skip fields that have been exlcuded
 			if($fieldList && is_array($fieldList) && !in_array($field->Name(), $fieldList)) continue;

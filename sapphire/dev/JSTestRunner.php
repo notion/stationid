@@ -42,13 +42,6 @@ class JSTestRunner extends Controller {
 		'$TestCase' => 'only',
 	);
 	
-	static $allowed_actions = array(
-		'index',
-		'all',
-		'browse',
-		'only'
-	);
-	
 	/**
 	 * Override the default reporter with a custom configured subclass.
 	 *

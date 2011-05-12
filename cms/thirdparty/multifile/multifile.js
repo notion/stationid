@@ -208,7 +208,7 @@ function MultiSelector( list_target, max, upload_button ){
 		MultiSelectorObserver.fire('onAfterCreateRow', [fileId, new_row], this); 
 		
 		// Modified 2006-11-06 by Silverstripe Ltd.
-		if(typeof(window.ontabschanged) != 'undefined') window.ontabschanged();
+		window.ontabschanged();
 		
 	};
 

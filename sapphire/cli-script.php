@@ -50,12 +50,6 @@ if(isset($_SERVER['argv'][2])) {
 	$_REQUEST = $_GET;
 }
 
-// Set 'url' GET parameter
-if(isset($_SERVER['argv'][1])) {
-	$_REQUEST['url'] = $_SERVER['argv'][1];
-	$_GET['url'] = $_SERVER['argv'][1];
-}
-
 /**
  * Include Sapphire's core code
  */
@@ -67,7 +61,7 @@ global $databaseConfig;
 $_SESSION = null;
 
 // Connect to database
-require_once("model/DB.php");
+require_once("core/model/DB.php");
 DB::connect($databaseConfig);
 
 // Get the request URL from the querystring arguments

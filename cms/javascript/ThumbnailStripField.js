@@ -1,10 +1,3 @@
-/**
- * File: ThumbnailStripField.js
- */
-
-/**
- * Class: ThumbnailStripField
- */
 ThumbnailStripField = Class.create();
 // We do this instead of div.thumbnailstrip for efficiency.  It means that ThumbnailStripField can only be used in the
 // CMS toolbar
@@ -21,18 +14,16 @@ ThumbnailStripField.prototype = {
 	updateMethod: 'getimages',
 	
 	initialize: function() {
-		var self = this;
-		
 		try {
 			this.updateMethod = this.className.match(/updatemethod=([^ ]+)/)[1];
 		} catch(err) {}	
 		
 		if(this.className.match(/parent=([^ ]+)/)) {
 			// HACK: This is hard-coded to only work with TreeDropdownFields
-			var inputField = $(RegExp.$1), parentField = inputField.parentNode;
-			if(parentField) jQuery(parentField).bind('change', function() {
-				self.ajaxGetFiles(jQuery(inputField).val());
-			});
+			var parentField = $(RegExp.$1).parentNode;
+			if(parentField) {
+				parentField.observeMethod('Change', this.ajaxGetFiles.bind(this));
+			}
 			
 			var searchField = $$('#' + this.updateMethod + 'Search input')[0];		
 			var timeout = undefined;
@@ -60,7 +51,11 @@ ThumbnailStripField.prototype = {
 		this.innerHTML = '<h2>Loading...</h2>';
 		var ajaxURL = this.helperURLBase() + '&methodName=' + this.updateMethod + '&folderID=' + folderID + '&searchText=' + searchText + securityID + '&cacheKillerDate=' + parseInt((new Date()).getTime()) + '&cacheKillerRand=' + parseInt(10000 * Math.random());
 
-		jQuery(this).load(ajaxURL, callback);
+		new Ajax.Updater(this, ajaxURL, {
+			method : 'get', 
+			onComplete : callback,
+			onFailure : function(response) { errorMessage("Error getting files", response); }
+		});
 	},
 
 	reapplyBehaviour: function() {

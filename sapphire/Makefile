@@ -15,6 +15,3 @@ phpunit:
 
 windmill:
 	functest ../cms/tests/test_windmill url=${URL}dev/tests/startsession browser=firefox
-
-jasmine:
-	./tests/javascript/server.sh

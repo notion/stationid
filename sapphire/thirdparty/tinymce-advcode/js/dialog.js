@@ -2,12 +2,14 @@ tinyMCEPopup.requireLangPack();
 
 var CodeDialog = {
   init : function() {
-    var f = document.forms[0];
-    f.codepress.value = tinyMCEPopup.editor.getContent();
+    cp = document.getElementById('codepress') ? document.getElementById('codepress') : document.getElementById('codepress_cp');
+    cp.value = tinyMCEPopup.editor.getContent();
   },
 
   insert : function() {
-    tinyMCEPopup.editor.setContent(codepress.getCode());
+	// Customized by SilverStripe 2009-01-05 - see dialog.html for details
+	var content = (navigator.userAgent.match('KHTML')) ? document.getElementById('codepress').value : codepress.getCode();
+    tinyMCEPopup.editor.setContent(content);
     tinyMCEPopup.close();
   }
 };

@@ -1,16 +1,5 @@
-/**
- * File: CommentTableField.js
- */
-
-/**
- * Class: CommentTableField
- */
 CommentTableField = Class.create();
 CommentTableField.prototype = {
-	
-	/**
-	 * Constructor: initialize
-	 */
 	initialize: function() {
 		var rules = {};
 		
@@ -46,35 +35,27 @@ CommentTableField.prototype = {
 		Behaviour.register(rules);
 	},
 	
-	/**
-	 * Function: removeRowAfterAjax
-	 */
 	removeRowAfterAjax: function(e) {
 		var img = Event.element(e);
 		var link = Event.findElement(e,"a");
 		var row = Event.findElement(e,"tr");
 		
 		img.setAttribute("src",'cms/images/network-save.gif'); // TODO doesn't work in Firefox1.5+
-		jQuery.ajax({
-			'url': link.getAttribute("href")
-			'method': 'post', 
-			'data': 'forceajax=1',
-			'success': function(){
-				Effect.Fade(row);
-			},
-			'error': function(response) {errorMessage('Server Error', response);}
-		});
+		new Ajax.Request(
+			link.getAttribute("href"),
+			{
+				method: 'post', 
+				postBody: 'forceajax=1',
+				onComplete: function(){
+					Effect.Fade(row);
+				}.bind(this),
+				onFailure: ajaxErrorHandler
+			}
+		);
 		Event.stop(e);
 	},
 	
-	/**
-	 * Function: prepareSearch
-	 * 
-	 * prevent submission of wrong form-button (CommentFilterButton)
-	 * 
-	 * Parameters:
-	 *  (Event) e
-	 */
+	// prevent submission of wrong form-button (CommentFilterButton)
 	prepareSearch: function(e) {
 		// IE6 doesnt send an event-object with onkeypress
 		var event = (e) ? e : window.event;
@@ -91,16 +72,9 @@ CommentTableField.prototype = {
 
 CommentTableField.applyTo('div.CommentTableField');
 
-/**
- * Class: CommentFilterButton
- */
 CommentFilterButton = Class.create();
 CommentFilterButton.applyTo('#CommentFilterButton');
 CommentFilterButton.prototype = {
-	
-	/**
-	 * Constructor: initialize
-	 */
 	initialize: function() {
 		this.inputFields = new Array();
 		
@@ -125,22 +99,10 @@ CommentFilterButton.prototype = {
 		}
 	},
 	
-	/**
-	 * Function: isChanged
-	 * 
-	 * Returns:
-	 *  (boolean)
-	 */
 	isChanged: function() {
 		return false;
 	},
 	
-	/**
-	 * Function: onclick
-	 * 
-	 * Parameters:
-	 *  (Event) e
-	 */
 	onclick: function(e) {
 	    try {
     	    var form = Event.findElement(e,"form");

@@ -142,7 +142,7 @@ var ImageDialog = {
 		}
 
 		tinymce.extend(args, {
-			src : nl.src.value.replace(/ /g, '%20'),
+			src : nl.src.value,
 			width : nl.width.value,
 			height : nl.height.value,
 			alt : nl.alt.value,
@@ -177,8 +177,6 @@ var ImageDialog = {
 			ed.undoManager.add();
 		}
 
-		tinyMCEPopup.editor.execCommand('mceRepaint');
-		tinyMCEPopup.editor.focus();
 		tinyMCEPopup.close();
 	},
 
@@ -385,7 +383,7 @@ var ImageDialog = {
 				v = f.border.value;
 				if (v || v == '0') {
 					if (v == '0')
-						img.style.border = '0 none none';
+						img.style.border = '0';
 					else
 						img.style.border = v + 'px solid black';
 				}
@@ -416,7 +414,7 @@ var ImageDialog = {
 			}
 
 			// Merge
-			dom.get('style').value = dom.serializeStyle(dom.parseStyle(img.style.cssText), 'img');
+			dom.get('style').value = dom.serializeStyle(dom.parseStyle(img.style.cssText));
 		}
 	},
 

@@ -84,8 +84,16 @@ abstract class Object {
 	public static function create() {
 		$args  = func_get_args();
 		$class = self::getCustomClass(array_shift($args));
-		$reflector = new ReflectionClass($class);
-		return $reflector->newInstanceArgs($args);
+		
+		if(version_compare(PHP_VERSION, '5.1.3', '>=')) {
+			$reflector = new ReflectionClass($class);
+			return $reflector->newInstanceArgs($args);
+		} else {
+			// we're using a PHP install that doesn't support ReflectionClass->newInstanceArgs()
+			
+			$args = $args + array_fill(0, 9, null);
+			return new $class($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8]);
+		}
 	}
 	
 	private static $_cache_inst_args = array();
@@ -216,8 +224,13 @@ abstract class Object {
 			$class = self::$strong_classes[$class];
 		}
 		
-		$reflector = new ReflectionClass($class);
-		return $reflector->newInstanceArgs($args);
+		if(version_compare(PHP_VERSION, '5.1.3', '>=')) {
+			$reflector = new ReflectionClass($class);
+			return $reflector->newInstanceArgs($args);
+		} else {
+			$args = $args + array_fill(0, 9, null);
+			return new $class($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8]);
+		}
 	}
 	
 	/**
@@ -513,7 +526,7 @@ abstract class Object {
 			user_error(sprintf('Object::add_extension() - Can\'t find extension class for "%s"', $extensionClass), E_USER_ERROR);
 		}
 		
-		if(!is_subclass_of($extensionClass, 'Extension')) {
+		if(!ClassInfo::is_subclass_of($extensionClass, 'Extension')) {
 			user_error(sprintf('Object::add_extension() - Extension "%s" is not a subclass of Extension', $extensionClass), E_USER_ERROR);
 		}
 		
@@ -537,13 +550,8 @@ abstract class Object {
 		self::set_static($class, 'extensions', $extensions);
 		
 		// load statics now for DataObject classes
-		if(is_subclass_of($class, 'DataObject')) {
-			if(is_subclass_of($extensionClass, 'DataObjectDecorator')) {
-				DataObjectDecorator::load_extra_statics($class, $extension);
-			}
-			else {
-				user_error("$extensionClass cannot be applied to $class without being a DataObjectDecorator", E_USER_ERROR);
-			}
+		if(ClassInfo::is_subclass_of($class, 'DataObject')) {
+			DataObjectDecorator::load_extra_statics($class, $extension);
 		}
 	}
 
@@ -555,26 +563,12 @@ abstract class Object {
 		// _cache_statics_prepared setting must come first to prevent infinite loops when we call
 		// get_static below
 		self::$_cache_statics_prepared[$class] = true;
-		
+
 		// load statics now for DataObject classes
 		if(is_subclass_of($class, 'DataObject')) {
 			$extensions = Object::uninherited_static($class, 'extensions');
-			
-			if($extensions) {
-				foreach($extensions as $extension) {
-					$extensionClass = $extension;
-					
-					if(preg_match('/^([^(]*)/', $extension, $matches)) {
-						$extensionClass = $matches[1];
-					}
-					
-					if(is_subclass_of($extensionClass, 'DataObjectDecorator')) {
-						DataObjectDecorator::load_extra_statics($class, $extension);
-					}
-					else {
-						user_error("$extensionClass cannot be applied to $class without being a DataObjectDecorator", E_USER_ERROR);
-					}
-				}
+			if($extensions) foreach($extensions as $extension) {
+				DataObjectDecorator::load_extra_statics($class, $extension);
 			}
 		}
 	}
@@ -1110,6 +1104,14 @@ abstract class Object {
 	 */
 	protected function sanitiseCachename($name) {
 		return str_replace(array('~', '.', '/', '!', ' ', "\n", "\r", "\t", '\\', ':', '"', '\'', ';'), '_', $name);
+	}
+	
+	/**
+	 * @deprecated 2.4 Use getExtensionInstance
+	 */
+	public function extInstance($extension) {
+		user_error('Object::extInstance() is deprecated. Please use Object::getExtensionInstance() instead.', E_USER_NOTICE);
+		return $this->getExtensionInstance($extension);
 	}
 	
 }

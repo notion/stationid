@@ -1,9 +1,9 @@
 /*
- * jQuery UI Sortable 1.8.10
+ * jQuery UI Sortable 1.8rc3
  *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
+ * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT (MIT-LICENSE.txt)
+ * and GPL (GPL-LICENSE.txt) licenses.
  *
  * http://docs.jquery.com/UI/Sortables
  *
@@ -12,7 +12,7 @@
  *	jquery.ui.mouse.js
  *	jquery.ui.widget.js
  */
-(function( $, undefined ) {
+(function($) {
 
 $.widget("ui.sortable", $.ui.mouse, {
 	widgetEventPrefix: "sort",
@@ -71,18 +71,6 @@ $.widget("ui.sortable", $.ui.mouse, {
 			this.items[i].item.removeData("sortable-item");
 
 		return this;
-	},
-
-	_setOption: function(key, value){
-		if ( key === "disabled" ) {
-			this.options[ key ] = value;
-	
-			this.widget()
-				[ value ? "addClass" : "removeClass"]( "ui-sortable-disabled" );
-		} else {
-			// Don't call widget base _setOption for disable as it adds ui-state-disabled class
-			$.Widget.prototype._setOption.apply(this, arguments);
-		}
 	},
 
 	_mouseCapture: function(event, overrideHandle) {
@@ -360,7 +348,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		if(this.dragging) {
 
-			this._mouseUp({ target: null });
+			this._mouseUp();
 
 			if(this.options.helper == "original")
 				this.currentItem.css(this._storedCSS).removeClass("ui-sortable-helper");
@@ -378,23 +366,21 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		}
 
-		if (this.placeholder) {
-			//$(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately, it unbinds ALL events from the original node!
-			if(this.placeholder[0].parentNode) this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
-			if(this.options.helper != "original" && this.helper && this.helper[0].parentNode) this.helper.remove();
+		//$(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately, it unbinds ALL events from the original node!
+		if(this.placeholder[0].parentNode) this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
+		if(this.options.helper != "original" && this.helper && this.helper[0].parentNode) this.helper.remove();
 
-			$.extend(this, {
-				helper: null,
-				dragging: false,
-				reverting: false,
-				_noFinalSort: null
-			});
+		$.extend(this, {
+			helper: null,
+			dragging: false,
+			reverting: false,
+			_noFinalSort: null
+		});
 
-			if(this.domPosition.prev) {
-				$(this.domPosition.prev).after(this.currentItem);
-			} else {
-				$(this.domPosition.parent).prepend(this.currentItem);
-			}
+		if(this.domPosition.prev) {
+			$(this.domPosition.prev).after(this.currentItem);
+		} else {
+			$(this.domPosition.parent).prepend(this.currentItem);
 		}
 
 		return this;
@@ -410,10 +396,6 @@ $.widget("ui.sortable", $.ui.mouse, {
 			var res = ($(o.item || this).attr(o.attribute || 'id') || '').match(o.expression || (/(.+)[-=_](.+)/));
 			if(res) str.push((o.key || res[1]+'[]')+'='+(o.key && o.expression ? res[1] : res[2]));
 		});
-
-		if(!str.length && o.key) {
-			str.push(o.key + '=');
-		}
 
 		return str.join('&');
 
@@ -718,11 +700,8 @@ $.widget("ui.sortable", $.ui.mouse, {
 		// if no intersecting containers found, return 
 		if(!innermostContainer) return; 
 
-		// move the item into the container if it's not there already
-		if(this.containers.length === 1) {
-			this.containers[innermostIndex]._trigger("over", event, this._uiHash(this));
-			this.containers[innermostIndex].containerCache.over = 1;
-		} else if(this.currentContainer != this.containers[innermostIndex]) { 
+		// move the item into the container if it's not there already 
+		if(this.currentContainer != this.containers[innermostIndex]) { 
 
 			//When entering a new container, we will find the item with the least distance and append our item near it 
 			var dist = 10000; var itemWithLeastDistance = null; var base = this.positionAbs[this.containers[innermostIndex].floating ? 'left' : 'top']; 
@@ -1067,7 +1046,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 });
 
 $.extend($.ui.sortable, {
-	version: "1.8.10"
+	version: "1.8rc3"
 });
 
 })(jQuery);

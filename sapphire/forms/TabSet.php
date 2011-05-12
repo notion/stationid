@@ -68,17 +68,14 @@ class TabSet extends CompositeField {
 	 * The HTML is a standardised format, containing a &lt;ul;
 	 */
 	public function FieldHolder() {
-		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery/jquery.js');
+		Requirements::javascript(SAPPHIRE_DIR . '/javascript/loader.js');
+		Requirements::javascript(SAPPHIRE_DIR . "/thirdparty/prototype/prototype.js");
+		Requirements::javascript(SAPPHIRE_DIR . "/thirdparty/behaviour/behaviour.js");
+		Requirements::javascript(SAPPHIRE_DIR . "/javascript/prototype_improvements.js");
+		Requirements::javascript(THIRDPARTY_DIR . "/jquery/jquery.js");
 		Requirements::javascript(SAPPHIRE_DIR . "/javascript/jquery_improvements.js");
-		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-ui/jquery-ui.js');
-		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-cookie/jquery.cookie.js');
-		
-		Requirements::css(SAPPHIRE_DIR . '/thirdparty/jquery-ui-themes/smoothness/jquery.ui.all.css');
-		Requirements::css(SAPPHIRE_DIR . '/thirdparty/jquery-ui-themes/smoothness/jquery.ui.tabs.css');
-		
-		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js');
-		
-		Requirements::javascript(SAPPHIRE_DIR . '/javascript/TabSet.js');
+		Requirements::javascript(THIRDPARTY_DIR . "/tabstrip/tabstrip.js");
+		Requirements::css(THIRDPARTY_DIR . "/tabstrip/tabstrip.css");
 		
 		return $this->renderWith("TabSetFieldHolder");
 	}

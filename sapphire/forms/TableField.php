@@ -483,7 +483,7 @@ class TableField extends TableListField {
 		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/prototype/prototype.js');
 		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/behaviour/behaviour.js');
 		Requirements::javascript(SAPPHIRE_DIR . '/javascript/prototype_improvements.js');
-		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/scriptaculous/effects.js');
+		Requirements::javascript(THIRDPARTY_DIR . '/scriptaculous/effects.js');
 		Requirements::add_i18n_javascript(SAPPHIRE_DIR . '/javascript/lang');
 		Requirements::javascript(SAPPHIRE_DIR . '/javascript/TableListField.js');
 		Requirements::javascript(SAPPHIRE_DIR . '/javascript/TableField.js');

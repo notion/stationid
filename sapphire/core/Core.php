@@ -24,8 +24,6 @@
  * - CMS_PATH: Absolute filepath, e.g. "/var/www/my-webroot/cms"
  * - SAPPHIRE_DIR: Path relative to webroot, e.g. "sapphire"
  * - SAPPHIRE_PATH:Absolute filepath, e.g. "/var/www/my-webroot/sapphire"
- * - SAPPHIRE_ADMIN_DIR: 
- * - SAPPHIRE_ADMIN_PATH:
  * - THIRDPARTY_DIR: Path relative to webroot, e.g. "sapphire/thirdparty"
  * - THIRDPARTY_PATH: Absolute filepath, e.g. "/var/www/my-webroot/sapphire/thirdparty"
  * 
@@ -79,17 +77,15 @@ if(!isset($_SERVER['HTTP_HOST'])) {
 	// HTTP_HOST, REQUEST_PORT, SCRIPT_NAME, and PHP_SELF
 	if(isset($_FILE_TO_URL_MAPPING)) {
 		$fullPath = $testPath = realpath($_SERVER['SCRIPT_FILENAME']);
-		while($testPath && $testPath != '/' && !preg_match('/^[A-Z]:\\\\$/', $testPath)) {
+		while($testPath && $testPath != "/"  && !preg_match('/^[A-Z]:\\\\$/', $testPath)) {
 			if(isset($_FILE_TO_URL_MAPPING[$testPath])) {
 				$url = $_FILE_TO_URL_MAPPING[$testPath] 
-					. str_replace(DIRECTORY_SEPARATOR, '/', substr($fullPath,strlen($testPath)));
+					. str_replace(DIRECTORY_SEPARATOR,'/',substr($fullPath,strlen($testPath)));
 				
-				$components = parse_url($url);
-				$_SERVER['HTTP_HOST'] = $components['host'];
-				if(!empty($components['port'])) $_SERVER['HTTP_HOST'] .= ':' . $components['port'];
-				$_SERVER['SCRIPT_NAME'] = $_SERVER['PHP_SELF'] = $components['path'];
-				if(!empty($components['port'])) $_SERVER['REQUEST_PORT'] = $components['port'];
-				break;
+				$_SERVER['HTTP_HOST'] = parse_url($url, PHP_URL_HOST);
+				$_SERVER['SCRIPT_NAME'] = $_SERVER['PHP_SELF'] = parse_url($url, PHP_URL_PATH);
+				$_SERVER['REQUEST_PORT'] = parse_url($url, PHP_URL_PORT);
+			    break;
 			}
 			$testPath = dirname($testPath);
 		}
@@ -142,14 +138,14 @@ if(!defined('BASE_PATH')) {
 	define('BASE_PATH', rtrim(dirname(dirname(dirname(__FILE__)))), DIRECTORY_SEPARATOR);
 }
 if(!defined('BASE_URL')) {
-	// Determine the base URL by comparing SCRIPT_NAME to SCRIPT_FILENAME and getting common elements
-	$path = realpath($_SERVER['SCRIPT_FILENAME']);
-	if(substr($path, 0, strlen(BASE_PATH)) == BASE_PATH) {
-		$urlSegmentToRemove = substr($path, strlen(BASE_PATH));
-		if(substr($_SERVER['SCRIPT_NAME'], -strlen($urlSegmentToRemove)) == $urlSegmentToRemove) {
+	// Determine the base URL by comparing SCRIPT_NAME to SCRIPT_FILENAME and getting the common
+	// elements
+	if(substr($_SERVER['SCRIPT_FILENAME'],0,strlen(BASE_PATH)) == BASE_PATH) {
+		$urlSegmentToRemove = substr($_SERVER['SCRIPT_FILENAME'],strlen(BASE_PATH));
+		if(substr($_SERVER['SCRIPT_NAME'],-strlen($urlSegmentToRemove)) == $urlSegmentToRemove) {
 			$baseURL = substr($_SERVER['SCRIPT_NAME'], 0, -strlen($urlSegmentToRemove));
 			define('BASE_URL', rtrim($baseURL, DIRECTORY_SEPARATOR));
-		}
+		} 
 	}
 	
 	// If that didn't work, failover to the old syntax.  Hopefully this isn't necessary, and maybe
@@ -167,8 +163,6 @@ define('THEMES_DIR', 'themes');
 define('THEMES_PATH', BASE_PATH . '/' . THEMES_DIR);
 define('SAPPHIRE_DIR', 'sapphire');
 define('SAPPHIRE_PATH', BASE_PATH . '/' . SAPPHIRE_DIR);
-define('SAPPHIRE_ADMIN_DIR', 'sapphire/admin');
-define('SAPPHIRE_ADMIN_PATH', BASE_PATH . '/' . SAPPHIRE_ADMIN_DIR);
 define('CMS_DIR', 'cms');
 define('CMS_PATH', BASE_PATH . '/' . CMS_DIR);
 define('THIRDPARTY_DIR', SAPPHIRE_DIR . '/thirdparty');
@@ -203,39 +197,44 @@ set_include_path(BASE_PATH . '/sapphire' . PATH_SEPARATOR
 	. BASE_PATH . '/sapphire/thirdparty' . PATH_SEPARATOR
 	. get_include_path());
 
-// Include the files needed the initial manifest building, as well as any files
-// that are needed for the boostrap process on every request.
-require_once 'cache/Cache.php';
-require_once 'core/Object.php';
-require_once 'core/ClassInfo.php';
-require_once 'control/Director.php';
-require_once 'dev/Debug.php';
-require_once 'filesystem/FileFinder.php';
-require_once 'core/manifest/ClassLoader.php';
-require_once 'core/manifest/ClassManifest.php';
-require_once 'core/manifest/ManifestFileFinder.php';
-require_once 'core/manifest/TemplateLoader.php';
-require_once 'core/manifest/TemplateManifest.php';
-require_once 'core/manifest/TokenisedRegularExpression.php';
+/**
+ * Sapphire class autoloader.  Requires the ManifestBuilder to work.
+ * $_CLASS_MANIFEST must have been loaded up by ManifestBuilder for this to successfully load
+ * classes.  Classes will be loaded from any PHP file within the application.
+ * If your class contains an underscore, for example, Page_Controller, then the filename is
+ * expected to be the stuff before the underscore.  In this case, Page.php.
+ * 
+ * Class names are converted to lowercase for lookup to adhere to PHP's case-insensitive
+ * way of dealing with them.
+ */
+function sapphire_autoload($className) {
+	global $_CLASS_MANIFEST;
+	$lClassName = strtolower($className);
+	if(isset($_CLASS_MANIFEST[$lClassName])) include_once($_CLASS_MANIFEST[$lClassName]);
+	else if(isset($_CLASS_MANIFEST[$className])) include_once($_CLASS_MANIFEST[$className]);
+}
+
+spl_autoload_register('sapphire_autoload');
+
+require_once("core/ManifestBuilder.php");
+require_once("core/ClassInfo.php");
+require_once('core/Object.php');
+require_once('core/control/Director.php');
+require_once('filesystem/Filesystem.php');
+require_once("core/Session.php");
 
 ///////////////////////////////////////////////////////////////////////////////
 // MANIFEST
 
-// Regenerate the manifest if ?flush is set, or if the database is being built.
-// The coupling is a hack, but it removes an annoying bug where new classes
-// referenced in _config.php files can be referenced during the build process.
-$flush = (isset($_GET['flush']) || isset($_REQUEST['url']) && (
-	$_REQUEST['url'] == 'dev/build' || $_REQUEST['url'] == BASE_URL . '/dev/build'
-));
-$manifest = new SS_ClassManifest(BASE_PATH, false, $flush);
+/**
+ * Include the manifest
+ */
+ManifestBuilder::include_manifest();
 
-$loader = SS_ClassLoader::instance();
-$loader->registerAutoloader();
-$loader->pushManifest($manifest);
-
-SS_TemplateLoader::instance()->pushManifest(new SS_TemplateManifest(
-	BASE_PATH, false, isset($_GET['flush'])
-));
+/**
+ * ?debugmanifest=1 hook
+ */
+if(isset($_GET['debugmanifest'])) Debug::show(file_get_contents(MANIFEST_FILE));
 
 // If this is a dev site, enable php error reporting
 // This is necessary to force developers to acknowledge and fix
@@ -315,10 +314,16 @@ function getTempFolder($base = null) {
 }
 
 /**
- * @deprecated 3.0 Please use {@link SS_ClassManifest::getItemPath()}.
+ * Return the file where that class is stored.
+ * 
+ * @param String $className Case-insensitive lookup.
+ * @return String
  */
 function getClassFile($className) {
-	return SS_ClassLoader::instance()->getManifest()->getItemPath($className);
+	global $_CLASS_MANIFEST;
+	$lClassName = strtolower($className);
+	if(isset($_CLASS_MANIFEST[$lClassName])) return $_CLASS_MANIFEST[$lClassName];
+	else if(isset($_CLASS_MANIFEST[$className])) return $_CLASS_MANIFEST[$className];
 }
 
 /**

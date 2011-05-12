@@ -335,30 +335,7 @@ class FieldSetTest extends SapphireTest {
 		/* The position of the Title field is at number 3 */
 		$this->assertEquals(3, $fields->fieldByName('Title')->Pos());
 	}
-
-	function testInsertBeforeMultipleFields() {
-		$fields = new FieldSet(
-			$root = new TabSet("Root", 
-				$main = new Tab("Main",
-					$a = new TextField("A"),
-					$b = new TextField("B")
-				)
-			)
-		);
-
-		$fields->addFieldsToTab('Root.Main', array(
-			new TextField('NewField1'),
-			new TextField('NewField2')
-		), 'B');
-
-		$this->assertEquals(array_keys($fields->dataFields()), array(
-			'A',
-			'NewField1',
-			'NewField2',
-			'B'
-		));
-	}
-
+	
 	/**
 	 * Test inserting a field after another in a set.
 	 */
@@ -730,3 +707,4 @@ class FieldSetTest extends SapphireTest {
 		);
 	}
 }
+?>

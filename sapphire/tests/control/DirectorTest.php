@@ -147,6 +147,7 @@ class DirectorTest extends SapphireTest {
 	}
 	
 	public function testResetGlobalsAfterTestRequest() {
+
 		$_GET = array('somekey' => 'getvalue');
 		$_POST = array('somekey' => 'postvalue');
 		$_COOKIE = array('somekey' => 'cookievalue');
@@ -159,15 +160,21 @@ class DirectorTest extends SapphireTest {
 	}
 	
 	public function testTestRequestCarriesGlobals() {
+
 		$fixture = array('somekey' => 'sometestvalue');
+	
 		foreach(array('get', 'post') as $method) {
+
 			foreach(array('return%sValue', 'returnRequestValue', 'returnCookieValue') as $testfunction) {
+
 				$url = 'DirectorTestRequest_Controller/' . sprintf($testfunction, ucfirst($method)) . '?' . http_build_query($fixture);
 				$getresponse = Director::test($url, $fixture, null, strtoupper($method), null, null, $fixture);
 
 				$this->assertType('SS_HTTPResponse', $getresponse, 'Director::test() returns SS_HTTPResponse');
 				$this->assertEquals($fixture['somekey'], $getresponse->getBody(), 'Director::test() ' . $testfunction);
+
 			}
+
 		}
 	}
 	

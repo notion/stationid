@@ -47,7 +47,7 @@ class FullTestSuite {
 	 * @return Array
 	 */
 	public static function get_all_tests() {
-		TestRunner::use_test_manifest();
+		ManifestBuilder::load_test_manifest();
 		$tests = ClassInfo::subclassesFor('SapphireTest');
 		array_shift($tests);
 		

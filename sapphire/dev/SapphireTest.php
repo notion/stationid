@@ -19,13 +19,6 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 	 */
 	static $fixture_file = null;
 	
-	/**
-	 * @var Boolean If set to TRUE, this will force a test database to be generated
-	 * in {@link setUp()}. Note that this flag is overruled by the presence of a 
-	 * {@link $fixture_file}, which always forces a database build.
-	 */
-	protected $usesDatabase = null;
-	
 	protected $originalMailer;
 	protected $originalMemberPasswordValidator;
 	protected $originalRequirements;
@@ -128,28 +121,24 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 		Member::set_password_validator(null);
 		Cookie::set_report_errors(false);
 		
-		if(class_exists('RootURLController')) RootURLController::reset();
-		if(class_exists('Translatable')) Translatable::reset();
+		RootURLController::reset();
+		Translatable::reset();
 		Versioned::reset();
 		DataObject::reset();
-		if(class_exists('SiteTree')) SiteTree::reset();
-		Hierarchy::reset();
+		SiteTree::reset();
 		if(Controller::has_curr()) Controller::curr()->setSession(new Session(array()));
 		
 		$this->originalTheme = SSViewer::current_theme();
 		
-		if(class_exists('SiteTree')) {
-			// Save nested_urls state, so we can restore it later
-			$this->originalNestedURLsState = SiteTree::nested_urls();
-		}
+		// Save nested_urls state, so we can restore it later
+		$this->originalNestedURLsState = SiteTree::nested_urls();
 
 		$className = get_class($this);
 		$fixtureFile = eval("return {$className}::\$fixture_file;");
-		$prefix = defined('SS_DATABASE_PREFIX') ? SS_DATABASE_PREFIX : 'ss_';
-
+		
 		// Set up fixture
-		if($fixtureFile || $this->usesDatabase || !self::using_temp_db()) {
-			if(substr(DB::getConn()->currentDatabase(), 0, strlen($prefix) + 5) != strtolower(sprintf('%stmpdb', $prefix))) {
+		if($fixtureFile || !self::using_temp_db()) {
+			if(substr(DB::getConn()->currentDatabase(),0,5) != 'tmpdb') {
 				//echo "Re-creating temp database... ";
 				self::create_temp_db();
 				//echo "done.\n";
@@ -166,19 +155,10 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 			}
 
 			if($fixtureFile) {
-				$pathForClass = $this->getCurrentAbsolutePath();
 				$fixtureFiles = (is_array($fixtureFile)) ? $fixtureFile : array($fixtureFile);
 
 				$i = 0;
 				foreach($fixtureFiles as $fixtureFilePath) {
-					// Support fixture paths relative to the test class, rather than relative to webroot
-					// String checking is faster than file_exists() calls.
-					$isRelativeToFile = (strpos('/', $fixtureFilePath) === false || preg_match('/^\.\./', $fixtureFilePath));
-					if($isRelativeToFile) {
-						$resolvedPath = realpath($pathForClass . '/' . $fixtureFilePath);
-						if($resolvedPath) $fixtureFilePath = $resolvedPath;
-					}
-					
 					$fixture = new YamlFixture($fixtureFilePath);
 					$fixture->saveIntoDatabase();
 					$this->fixtures[] = $fixture;
@@ -379,25 +359,6 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 		$this->fixtures = array();
 	}
 	
-	/**
-	 * Useful for writing unit tests without hardcoding folder structures.
-	 * 
-	 * @return String Absolute path to current class.
-	 */
-	protected function getCurrentAbsolutePath() {
-		return dirname(SS_ClassLoader::instance()->getManifest()->getItemPath(get_class($this)));
-	}
-	
-	/**
-	 * @return String File path relative to webroot
-	 */
-	protected function getCurrentRelativePath() {
-		$base = Director::baseFolder();
-		$path = $this->getCurrentAbsolutePath();
-		if(substr($path,0,strlen($base)) == $base) $path = preg_replace('/^\/*/', '', substr($path,strlen($base)));
-		return $path;
-	}
-	
 	function tearDown() {
 		// Preserve memory settings
 		ini_set('memory_limit', ($this->originalMemoryLimit) ? $this->originalMemoryLimit : -1);
@@ -423,13 +384,11 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 		// Reset mocked datetime
 		SS_Datetime::clear_mock_now();
 		
-		if(class_exists('SiteTree')) {
-			// Restore nested_urls state
-			if ( $this->originalNestedURLsState )
-				SiteTree::enable_nested_urls();
-			else
-				SiteTree::disable_nested_urls();
-		}
+		// Restore nested_urls state
+		if ( $this->originalNestedURLsState )
+			SiteTree::enable_nested_urls();
+		else
+			SiteTree::disable_nested_urls();
 		
 		// Stop the redirection that might have been requested in the test.
 		// Note: Ideally a clean Controller should be created for each test. 
@@ -616,45 +575,6 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 	} 
 	
 	/**
-	 * Backported from PHPUnit 3.4 in order to maintain backwards
-	 * compatibility: assertType() is deprecated in PHPUnit 3.5 (with PHP 5.2.7+),
-	 * but as SilverStripe 2.3 and 2.4 support PHP 5.1 we can't require it.
-	 */
-	public static function assertType($expected, $actual, $message = '') {
-      // PHPUnit_Util_DeprecatedFeature_Logger::log(
-      //   'assertType() will be removed in PHPUnit 3.6 and should no longer ' .
-      //   'be used. assertInternalType() should be used for asserting ' .
-      //   'internal types such as "integer" or "string" whereas ' .
-      //   'assertInstanceOf() should be used for asserting that an object is ' .
-      //   'an instance of a specified class or interface.'
-      // );
-
-      if (is_string($expected)) {
-          if (PHPUnit_Util_Type::isType($expected)) {
-              $constraint = new PHPUnit_Framework_Constraint_IsType(
-                $expected
-              );
-          }
-
-          else if (class_exists($expected) || interface_exists($expected)) {
-              $constraint = new PHPUnit_Framework_Constraint_IsInstanceOf(
-                $expected
-              );
-          }
-
-          else {
-              throw PHPUnit_Util_InvalidArgumentHelper::factory(
-                1, 'class or interface name'
-              );
-          }
-      } else {
-          throw PHPUnit_Util_InvalidArgumentHelper::factory(1, 'string');
-      }
-
-      self::assertThat($actual, $constraint, $message);
-  }
-	
-	/**
 	 * Helper function for the DOS matchers
 	 */
 	private function dataObjectArrayMatch($item, $match) {
@@ -678,10 +598,12 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 	 */
 	static function using_temp_db() {
 		$dbConn = DB::getConn();
-		$prefix = defined('SS_DATABASE_PREFIX') ? SS_DATABASE_PREFIX : 'ss_';
-		return $dbConn && (substr($dbConn->currentDatabase(), 0, strlen($prefix) + 5) == strtolower(sprintf('%stmpdb', $prefix)));
+		return $dbConn && (substr($dbConn->currentDatabase(),0,5) == 'tmpdb');
 	}
 	
+	/**
+	 * @todo Make this db agnostic
+	 */
 	static function kill_temp_db() {
 		// Delete our temporary database
 		if(self::using_temp_db()) {
@@ -718,21 +640,23 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 		}
 	}
 	
+	/**
+	 * @todo Make this db agnostic
+	 */
 	static function create_temp_db() {
 		// Disable PHPUnit error handling
 		restore_error_handler();
 		
 		// Create a temporary database
 		$dbConn = DB::getConn();
-		$prefix = defined('SS_DATABASE_PREFIX') ? SS_DATABASE_PREFIX : 'ss_';
-		$dbname = strtolower(sprintf('%stmpdb', $prefix)) . rand(1000000,9999999);
+		$dbname = 'tmpdb' . rand(1000000,9999999);
 		while(!$dbname || $dbConn->databaseExists($dbname)) {
-			$dbname = strtolower(sprintf('%stmpdb', $prefix)) . rand(1000000,9999999);
+			$dbname = 'tmpdb' . rand(1000000,9999999);
 		}
-
+		
 		$dbConn->selectDatabase($dbname);
 		$dbConn->createDatabase();
-
+		
 		$st = new SapphireTest();
 		$st->resetDBSchema();
 		
@@ -743,9 +667,8 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	static function delete_all_temp_dbs() {
-		$prefix = defined('SS_DATABASE_PREFIX') ? SS_DATABASE_PREFIX : 'ss_';
 		foreach(DB::getConn()->allDatabaseNames() as $dbName) {
-			if(preg_match(sprintf('/^%stmpdb[0-9]+$/', $prefix), $dbName)) {
+			if(preg_match('/^tmpdb[0-9]+$/', $dbName)) {
 				DB::getConn()->dropDatabaseByName($dbName);
 				if(Director::is_cli()) {
 					echo "Dropped database \"$dbName\"" . PHP_EOL;

@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>{#advcode_dlg.title}</title>
-    <script type="text/javascript" src="../../tiny_mce_popup.js"></script>
+    <script type="text/javascript" src="../../thirdparty/tinymce/tiny_mce_popup.js"></script>
     <script type="text/javascript" src="js/dialog.js"></script>
     <script type="text/javascript" src="js/codepress/codepress.js"></script>
   </head>
@@ -25,5 +25,14 @@
         <input type="button" id="cancel" name="cancel" value="{#cancel}" onclick="tinyMCEPopup.close();" />
       </div>
     </div>
+	<script><!--
+	/* Customized by SilverStripe 2009-01-05
+	 * For some reason, Safari doesn't support codepress - just use a textarea 
+	 * @see http://sourceforge.net/tracker/index.php?func=detail&aid=1913725&group_id=186981&atid=919470
+	 */
+	if(navigator.userAgent.match('KHTML')) {
+		document.getElementById('codepress').className = '';
+	}
+	//--></script>
   </body>
 </html>

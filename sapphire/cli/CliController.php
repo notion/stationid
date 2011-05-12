@@ -10,10 +10,6 @@
  * @subpackage cron
  */
 abstract class CliController extends Controller {
-	
-	static $allowed_actions = array(
-		'index'
-	);
 
 	function init() {
 		parent::init();

@@ -1,5 +1,6 @@
 <form $FormAttributes>
 	<fieldset>
+		<legend></legend>
 		<% control Fields %>
 			$FieldHolder
 		<% end_control %>

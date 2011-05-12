@@ -4,8 +4,6 @@
  * @subpackage tests
  */
 class CheckboxFieldTest extends SapphireTest {
-	
-	protected $usesDatabase = true;
 
 	protected $extraDataObjects = array(
 		'CheckboxFieldTest_Article',

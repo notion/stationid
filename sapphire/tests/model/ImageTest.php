@@ -1,39 +1,6 @@
 <?php
-
-/**
- * @package sapphire
- * @subpackage tests
- */
 class ImageTest extends SapphireTest {
-	
-	static $fixture_file = 'ImageTest.yml';
-
-	function setUp() {
-		parent::setUp();
-		
-		if(!file_exists(ASSETS_PATH)) mkdir(ASSETS_PATH);
-
-		// Create a test folders for each of the fixture references
-		$folderIDs = $this->allFixtureIDs('Folder');
-		
-		foreach($folderIDs as $folderID) {
-			$folder = DataObject::get_by_id('Folder', $folderID);
-			
-			if(!file_exists(BASE_PATH."/$folder->Filename")) mkdir(BASE_PATH."/$folder->Filename");
-		}
-		
-		// Create a test files for each of the fixture references
-		$fileIDs = $this->allFixtureIDs('Image');
-		foreach($fileIDs as $fileID) {
-			$file = DataObject::get_by_id('Image', $fileID);
-			$image = imagecreatetruecolor(300,300);
-		
-			imagepng($image, BASE_PATH."/$file->Filename");
-			imagedestroy($image);
-		
-			$file->write();
-		}
-	}
+	static $fixture_file = 'sapphire/tests/model/ImageTest.yml';
 	
 	function testGetTagWithTitle() {
 		$image = $this->objFromFixture('Image', 'imageWithTitle');
@@ -59,6 +26,28 @@ class ImageTest extends SapphireTest {
 		$this->assertEquals($expected, $actual);
 	}
 	
+	function setUp() {
+		parent::setUp();
+		
+		if(!file_exists(ASSETS_PATH)) mkdir(ASSETS_PATH);
+
+		/* Create a test folders for each of the fixture references */
+		$folderIDs = $this->allFixtureIDs('Folder');
+		foreach($folderIDs as $folderID) {
+			$folder = DataObject::get_by_id('Folder', $folderID);
+			if(!file_exists(BASE_PATH."/$folder->Filename")) mkdir(BASE_PATH."/$folder->Filename");
+		}
+		
+		/* Create a test files for each of the fixture references */
+		$fileIDs = $this->allFixtureIDs('Image');
+		foreach($fileIDs as $fileID) {
+			$file = DataObject::get_by_id('Image', $fileID);
+			$fh = fopen(BASE_PATH."/$file->Filename", "w");
+			fwrite($fh, str_repeat('x',1000000));
+			fclose($fh);
+		}
+	} 
+	
 	function tearDown() {
 		/* Remove the test files that we've created */
 		$fileIDs = $this->allFixtureIDs('Image');
@@ -76,21 +65,5 @@ class ImageTest extends SapphireTest {
 		
 		parent::tearDown();
 	}
-	
-	function testMultipleGenerateManipulationCalls() {
-		$image = $this->objFromFixture('Image', 'imageWithoutTitle');
-		
-		$imageFirst = $image->SetWidth(200);
-		$this->assertNotNull($imageFirst);
-		$expected = 200;
-		$actual = $imageFirst->getWidth();
-
-		$this->assertEquals($expected, $actual);
-		
-		$imageSecond = $imageFirst->setHeight(100);
-		$this->assertNotNull($imageSecond);
-		$expected = 100;
-		$actual = $imageSecond->getHeight();
-		$this->assertEquals($expected, $actual);
-	}
 }
+?>

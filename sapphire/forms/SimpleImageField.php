@@ -64,6 +64,10 @@
  */
 
 class SimpleImageField extends FileField {
+	/**
+	 * @deprecated 2.5
+	 */
+	public $allowedExtensions = array('jpg','gif','png');
 
 	function __construct($name, $title = null, $value = null, $form = null, $rightTitle = null, $folderName = null) {
 		parent::__construct($name, $title, $value, $form, $rightTitle, $folderName);

@@ -8,7 +8,7 @@
  */
 class RestfulServerTest extends SapphireTest {
 	
-	static $fixture_file = 'RestfulServerTest.yml';
+	static $fixture_file = 'sapphire/tests/api/RestfulServerTest.yml';
 
 	protected $extraDataObjects = array(
 		'RestfulServerTest_Comment',
@@ -356,22 +356,6 @@ class RestfulServerTest extends SapphireTest {
 		$responseArr = Convert::xml2array($response->getBody());
 		$this->assertEquals($responseArr['Rating'], 42);
 		$this->assertNotEquals($responseArr['WriteProtectedField'], 'haxx0red');
-	}
-
-	public function testJSONDataFormatter() {
-		$formatter = new JSONDataFormatter();
-		$single_do = $this->objFromFixture('Member', 'editor');
-
-		$this->assertEquals(
-			$formatter->convertDataObject($single_do, array("FirstName", "Email")),
-			'{"FirstName":"Editor","Email":"editor@test.com"}',
-			"Correct JSON formatting with field subset");
-
-		$set = DataObject::get("Member");
-		$this->assertEquals(
-			$formatter->convertDataObjectSet($set, array("FirstName", "Email")),
-			'{"totalSize":null,"items":[{"FirstName":"Editor","Email":"editor@test.com"},{"FirstName":"User","Email":"user@test.com"},{"FirstName":"ADMIN","Email":"ADMIN@example.org"}]}',
-			"Correct JSON formatting on a dataobjectset with field filter");
 	}
 	
 	public function testApiAccessWithPOST() {

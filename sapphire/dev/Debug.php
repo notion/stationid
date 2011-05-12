@@ -321,30 +321,23 @@ class Debug {
 		if(!$friendlyErrorDetail) $friendlyErrorDetail = self::$friendly_error_detail;
 
 		if(!headers_sent()) {
-			$currController = Controller::curr();
-			// Ensure the error message complies with the HTTP 1.1 spec
-			$msg = strip_tags(str_replace(array("\n", "\r"), '', $friendlyErrorMessage));
-			if($currController) {
-				$response = $currController->getResponse();
-				$response->setStatusCode($statusCode, $msg);
-			} else {
-				header($_SERVER['SERVER_PROTOCOL'] . " $statusCode $msg");
-			}
+			header(sprintf('%s %d %s',
+				$_SERVER['SERVER_PROTOCOL'],
+				$statusCode,
+				// Ensure the error message complies with the HTTP 1.1 spec
+				strip_tags(str_replace(array("\n", "\r"), '', $friendlyErrorMessage))
+			));
 		}
 
 		if(Director::is_ajax()) {
 			echo $friendlyErrorMessage;
 		} else {
-			if(class_exists('ErrorPage')){
-				$errorFilePath = ErrorPage::get_filepath_for_errorcode(
-					$statusCode, 
-					class_exists('Translatable') ? Translatable::get_current_locale() : null
-				);
-				if(file_exists($errorFilePath)) {
-					$content = file_get_contents(ASSETS_PATH . "/error-$statusCode.html");
-					// $BaseURL is left dynamic in error-###.html, so that multi-domain sites don't get broken
-					echo str_replace('$BaseURL', Director::absoluteBaseURL(), $content);
-				}
+			$errorFilePath = ErrorPage::get_filepath_for_errorcode($statusCode, Translatable::get_current_locale());
+			if(file_exists($errorFilePath)) {
+				$content = file_get_contents(ASSETS_PATH . "/error-$statusCode.html");
+				// $BaseURL is left dynamic in error-###.html, so that multi-domain sites don't get broken
+				echo str_replace('$BaseURL', Director::absoluteBaseURL(), $content);
+
 			} else {
 				$renderer = new DebugView();
 				$renderer->writeHeader();
@@ -430,7 +423,7 @@ class Debug {
 		echo '<pre>';
 		$offset++;
 		foreach($lines as $line) {
-			$line = htmlentities($line, ENT_COMPAT, 'UTF-8');
+			$line = htmlentities($line);
 			if ($offset == $errline) {
 				echo "<span>$offset</span> <span class=\"error\">$line</span>";
 			} else {

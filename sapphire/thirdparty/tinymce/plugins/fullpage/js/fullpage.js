@@ -1,13 +1,3 @@
-/**
- * fullpage.js
- *
- * Copyright 2009, Moxiecode Systems AB
- * Released under LGPL License.
- *
- * License: http://tinymce.moxiecode.com/license
- * Contributing: http://tinymce.moxiecode.com/contributing
- */
-
 tinyMCEPopup.requireLangPack();
 
 var doc;
@@ -47,7 +37,7 @@ var defaultFontNames = 'Arial=arial,helvetica,sans-serif;Courier New=courier new
 var defaultFontSizes = '10px,11px,12px,13px,14px,15px,16px';
 
 function init() {
-	var f = document.forms['fullpage'], el = f.elements, e, i, p, doctypes, encodings, mediaTypes, dir, fonts, ed = tinyMCEPopup.editor, dom = tinyMCEPopup.dom, style, xmlVer, xmlEnc, docType;
+	var f = document.forms['fullpage'], el = f.elements, e, i, p, doctypes, encodings, mediaTypes, fonts, ed = tinyMCEPopup.editor, dom = tinyMCEPopup.dom, style;
 
 	// Setup doctype select box
 	doctypes = ed.getParam("fullpage_doctypes", defaultDocTypes).split(',');
@@ -124,7 +114,7 @@ function init() {
 	// Preprocess the HTML disable scripts and urls
 	h = h.replace(/<script>/gi, '<script type="text/javascript">');
 	h = h.replace(/type=([\"\'])?/gi, 'type=$1-mce-');
-	h = h.replace(/(src=|href=)/g, 'data-mce-$1');
+	h = h.replace(/(src=|href=)/g, 'mce_$1');
 
 	// Write in the content in the iframe
 	doc.write(h + '</body></html>');
@@ -133,13 +123,8 @@ function init() {
 	// Parse xml and doctype
 	xmlVer = getReItem(/<\?\s*?xml.*?version\s*?=\s*?"(.*?)".*?\?>/gi, h, 1);
 	xmlEnc = getReItem(/<\?\s*?xml.*?encoding\s*?=\s*?"(.*?)".*?\?>/gi, h, 1);
-	docType = getReItem(/<\!DOCTYPE.*?>/gi, h.replace(/\n/g, ''), 0).replace(/ +/g, ' ');
+	docType = getReItem(/<\!DOCTYPE.*?>/gi, h, 0);
 	f.langcode.value = getReItem(/lang="(.*?)"/gi, h, 1);
-	
-	// Get direction and inherit it from the html-tag too (according to w3c recommandation)
-	dir = getReItem(/dir\s*=\s*["']([^"']*)["']/i, h, 1);
-	if(doc.body.hasAttribute('dir') && (doc.body.getAttribute('dir') != ''))
-		dir = doc.body.getAttribute('dir');
 
 	// Parse title
 	if (e = doc.getElementsByTagName('title')[0])
@@ -147,7 +132,7 @@ function init() {
 
 	// Parse meta
 	tinymce.each(doc.getElementsByTagName('meta'), function(n) {
-		var na = (n.getAttribute('name', 2) || '').toLowerCase(), va = n.getAttribute('content', 2), eq = n.getAttribute('http-equiv', 2) || '';
+		var na = (n.getAttribute('name', 2) || '').toLowerCase(), va = n.getAttribute('content', 2), eq = n.getAttribute('httpEquiv', 2) || '';
 
 		e = el['meta' + na];
 
@@ -173,7 +158,7 @@ function init() {
 
 	selectByValue(f, 'doctypes', docType, true, true);
 	selectByValue(f, 'docencoding', xmlEnc, true, true);
-	selectByValue(f, 'langdir', dir, true, true);
+	selectByValue(f, 'langdir', doc.body.getAttribute('dir', 2) || '', true, true);
 
 	if (xmlVer != '')
 		el.xml_pi.checked = true;
@@ -185,7 +170,7 @@ function init() {
 		var m = l.getAttribute('media', 2) || '', t = l.getAttribute('type', 2) || '';
 
 		if (t == "-mce-text/css" && (m == "" || m == "screen" || m == "all") && (l.getAttribute('rel', 2) || '') == "stylesheet") {
-			f.stylesheet.value = l.getAttribute('data-mce-href', 2) || '';
+			f.stylesheet.value = l.getAttribute('mce_href', 2) || '';
 			return false;
 		}
 	});
@@ -283,8 +268,8 @@ function updateAction() {
 	// Fix scripts without a type
 	nl = doc.getElementsByTagName('script');
 	for (i=0; i<nl.length; i++) {
-		if (tinyMCEPopup.dom.getAttrib(nl[i], 'data-mce-type') == '')
-			nl[i].setAttribute('mce-type', 'text/javascript');
+		if (tinyMCEPopup.dom.getAttrib(nl[i], 'mce_type') == '')
+			nl[i].setAttribute('mce_type', 'text/javascript');
 	}
 
 	// Get primary stylesheet
@@ -294,13 +279,13 @@ function updateAction() {
 
 		tmp = tinyMCEPopup.dom.getAttrib(l, 'media');
 
-		if (tinyMCEPopup.dom.getAttrib(l, 'data-mce-type') == "text/css" && (tmp == "" || tmp == "screen" || tmp == "all") && tinyMCEPopup.dom.getAttrib(l, 'rel') == "stylesheet") {
+		if (tinyMCEPopup.dom.getAttrib(l, 'mce_type') == "text/css" && (tmp == "" || tmp == "screen" || tmp == "all") && tinyMCEPopup.dom.getAttrib(l, 'rel') == "stylesheet") {
 			addlink = false;
 
 			if (f.stylesheet.value == '')
 				l.parentNode.removeChild(l);
 			else
-				l.setAttribute('data-mce-href', f.stylesheet.value);
+				l.setAttribute('mce_href', f.stylesheet.value);
 
 			break;
 		}
@@ -311,7 +296,7 @@ function updateAction() {
 		l = doc.createElement('link');
 
 		l.setAttribute('type', 'text/css');
-		l.setAttribute('data-mce-href', f.stylesheet.value);
+		l.setAttribute('mce_href', f.stylesheet.value);
 		l.setAttribute('rel', 'stylesheet');
 
 		head.appendChild(l);
@@ -324,29 +309,17 @@ function updateAction() {
 	setMeta(head, 'robots', getSelectValue(f, 'metarobots'));
 	setMeta(head, 'Content-Type', getSelectValue(f, 'docencoding'));
 
-	setAttr(doc.body, 'dir', getSelectValue(f, 'langdir'));
+	doc.body.dir = getSelectValue(f, 'langdir');
 	doc.body.style.cssText = f.style.value;
 
-	function setAttr(elm, name, value) {
-		value = "" + value;
-
-		if (value.length > 0)
-			elm.setAttribute(name, value);
-		else
-			elm.removeAttribute(name, value);
-	}
-
-	setAttr(doc.body, 'vLink', f.visited_color.value);
-	setAttr(doc.body, 'link', f.link_color.value);
-	setAttr(doc.body, 'aLink', f.active_color.value);
+	doc.body.setAttribute('vLink', f.visited_color.value);
+	doc.body.setAttribute('link', f.link_color.value);
+	doc.body.setAttribute('text', f.textcolor.value);
+	doc.body.setAttribute('aLink', f.active_color.value);
 
 	doc.body.style.fontFamily = getSelectValue(f, 'fontface');
 	doc.body.style.fontSize = getSelectValue(f, 'fontsize');
 	doc.body.style.backgroundColor = f.bgcolor.value;
-
-	// Bug #4216: Using deprecated text attribute does not work in all browsers
-	doc.body.style.color = f.textcolor.value;
-	setAttr(doc.body, 'text', '');
 
 	if (f.leftmargin.value != '')
 		doc.body.style.marginLeft = f.leftmargin.value + 'px';
@@ -361,8 +334,8 @@ function updateAction() {
 		doc.body.style.marginTop = f.topmargin.value + 'px';
 
 	html = doc.getElementsByTagName('html')[0];
-	setAttr(html, 'lang', f.langcode.value);
-	setAttr(html, 'xml:lang', f.langcode.value);
+	html.setAttribute('lang', f.langcode.value);
+	html.setAttribute('xml:lang', f.langcode.value);
 
 	if (f.bgimage.value != '')
 		doc.body.style.backgroundImage = "url('" + f.bgimage.value + "')";
@@ -375,19 +348,10 @@ function updateAction() {
 	h = ser.serialize(doc.documentElement);
 	h = h.substring(0, h.lastIndexOf('</body>'));
 
-	if (h.indexOf('<title>') == -1 && f.metatitle.value)
+	if (h.indexOf('<title>') == -1)
 		h = h.replace(/<head.*?>/, '$&\n' + '<title>' + tinyMCEPopup.dom.encode(f.metatitle.value) + '</title>');
-	else if (f.metatitle.value)
-		h = h.replace(/<title>(.*?)<\/title>/, '<title>' + tinyMCEPopup.dom.encode(f.metatitle.value) + '</title>');
 	else
-		h = h.replace(/<title>(.*?)<\/title>\n*/, '');
-
-	if(v = f.langcode.value)
-		htmlt = '<html lang="' + v + '" xml:lang="' + v + '">';
-	else 
-		htmlt = '<html>';
-
-	h = h.replace(/<html.*?>/, htmlt);
+		h = h.replace(/<title>(.*?)<\/title>/, '<title>' + tinyMCEPopup.dom.encode(f.metatitle.value) + '</title>');
 
 	if ((v = getSelectValue(f, 'doctypes')) != '')
 		h = v + '\n' + h;

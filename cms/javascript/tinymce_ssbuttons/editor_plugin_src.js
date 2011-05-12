@@ -20,7 +20,6 @@
 			};
 		},
 
-
 		init : function(ed, url) {
 			/**
 			 * These map the action buttons to the IDs of the forms that they open/close
@@ -56,15 +55,11 @@
 					ed.controlManager.setActive(showCommand, false);
 					// Can't use $('contentPanel'), as its in a different window
 					window.parent.document.getElementById('contentPanel').style.display = "none";
-					// toggle layout panel
-					jQuery('body.CMSMain').entwine('ss').getMainLayout().close('east');
 				} else {
 					ed.controlManager.setActive(showCommand, true);
 					window.parent.document.getElementById('contentPanel').style.display = "block";
-					// toggle layout panel
-					jQuery('body.CMSMain').entwine('ss').getMainLayout().resizeAll();
-					jQuery('body.CMSMain').entwine('ss').getMainLayout().open('east');
 				}
+				window.onresize();
 			}
 
 			ed.addCommand("ssclosesidepanel", function(ed) {
@@ -84,11 +79,14 @@
 			});
 
 			ed.onNodeChange.add(function(ed, o) {
-				//$('Form_EditorToolbarLinkForm').updateSelection(ed);
-				//$('Form_EditorToolbarLinkForm').respondToNodeChange(ed);
+				if ($('Form_EditorToolbarLinkForm').updateSelection) {
+					$('Form_EditorToolbarLinkForm').updateSelection(ed);
+					$('Form_EditorToolbarLinkForm').respondToNodeChange(ed);
+				}
+				$('Form_EditorToolbarImageForm').respondToNodeChange(ed);
 			});
 			ed.onKeyUp.add(function(ed, o) {
-				//$('Form_EditorToolbarLinkForm').updateSelection(ed);
+				$('Form_EditorToolbarLinkForm').updateSelection(ed);
 			});
 		
 			// resize image containers when the image is resized.
@@ -98,8 +96,8 @@
 					// we have to delay the resize check here, as this event handler is called before the actual image
 					// resizing is done.
 					setTimeout(function() {
-						var ed        = tinyMCE.activeEditor, // we need to redeclare these for IE.
-							node      = ed.selection.getNode(),
+						var ed		= tinyMCE.activeEditor, // we need to redeclare these for IE.
+							node	  = ed.selection.getNode(),
 							container = ed.dom.getParent(node, 'div');
 
 						if(node.width && node.width != parseInt(ed.dom.getStyle(container, 'width'))) {

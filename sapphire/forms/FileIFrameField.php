@@ -49,15 +49,15 @@ class FileIFrameField extends FileField {
 	 * @return string
 	 */
 	public function Field() {
-		Requirements::css(SAPPHIRE_DIR . '/thirdparty/jquery-ui-themes/smoothness/jquery.ui.all.css');
 		Requirements::add_i18n_javascript(SAPPHIRE_DIR . '/javascript/lang');
-		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery/jquery.js');
-		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-ui/jquery-ui.js');
+		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
+		Requirements::css(Director::protocol().'ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/base/jquery-ui.css');
+		Requirements::javascript(Director::protocol().'ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js');
 		
 		
 		if($this->form->getRecord() && $this->form->getRecord()->exists()) {
 			$record = $this->form->getRecord();
-			if(class_exists('Translatable') && Object::has_extension('SiteTree', 'Translatable') && $record->Locale){
+			if(Object::has_extension('SiteTree', 'Translatable') && $record->Locale){
 				$iframe = "iframe?locale=".$record->Locale;
 			}else{
 				$iframe = "iframe";
@@ -104,9 +104,11 @@ class FileIFrameField extends FileField {
 		// clear the requirements added by any parent controllers
 		Requirements::clear();
 		Requirements::add_i18n_javascript('sapphire/javascript/lang');
-		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery/jquery.js');
+		Requirements::javascript(THIRDPARTY_DIR . '/prototype/prototype.js');
+		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
 		Requirements::javascript('sapphire/javascript/FileIFrameField.js');
 		
+		Requirements::css('cms/css/typography.css');
 		Requirements::css('sapphire/css/FileIFrameField.css');
 		
 		return $this->renderWith('FileIFrameField');
@@ -173,13 +175,7 @@ class FileIFrameField extends FileField {
 		if($data['FileSource'] == 'new') {
 			$fileObject = Object::create($desiredClass);
 			
-			try {
-				$this->upload->loadIntoFile($_FILES['Upload'], $fileObject, $this->folderName);
-			} catch (Exception $e){
-				$form->sessionMessage(_t('FileIFrameField.DISALLOWEDFILETYPE', 'This filetype is not allowed to be uploaded'), 'bad');
-				Director::redirectBack();
-				return;
-			}
+			$this->upload->loadIntoFile($_FILES['Upload'], $fileObject, $this->folderName);
 			
 			if($this->upload->isError()) {
 				Director::redirectBack();

@@ -7,15 +7,9 @@
  */
 class CodeViewer extends Controller {
 	
-	public static $url_handlers = array(
+	public static $url_handlers = array (
 		''       => 'browse',
 		'$Class' => 'viewClass'
-	);
-	
-	static $allowed_actions = array(
-		'index',
-		'browse',
-		'viewClass'
 	);
 	
 	/**
@@ -87,7 +81,7 @@ class CodeViewer extends Controller {
 		parent::init();
 		
 		if(!Permission::check('ADMIN')) return Security::permissionFailure();
-		TestRunner::use_test_manifest();
+		ManifestBuilder::load_test_manifest();
 	}
 	
 	public function browse() {
@@ -184,7 +178,7 @@ class CodeViewer extends Controller {
 		$comment = preg_replace('/^\/\*/','',$token[1]);
 		$comment = preg_replace('/\*\/$/','',$comment);
 		$comment = preg_replace('/(^|\n)[\t ]*\* */m',"\n",$comment);
-		$comment = htmlentities($comment, ENT_COMPAT, 'UTF-8');
+		$comment = htmlentities($comment);
 		$comment = str_replace("\n\n", "</p><p>", $comment);
 		return "<p>$comment</p>";
 	}
@@ -203,7 +197,7 @@ class CodeViewer extends Controller {
 			}
 		}
 		
-		$parsed['pretty'] = "<p>" . str_replace("\n\n", "</p><p>", htmlentities($comment, ENT_COMPAT, 'UTF-8')). "</p>";
+		$parsed['pretty'] = "<p>" . str_replace("\n\n", "</p><p>", htmlentities($comment)). "</p>";
 		return $parsed;
 	}
 	
@@ -252,11 +246,7 @@ class CodeViewer extends Controller {
 	 * Render the given token as HTML
 	 */
 	function renderToken($token) {
-		$tokenContent = htmlentities(
-			is_array($token) ? $token[1] : $token, 
-			ENT_COMPAT, 
-			'UTF-8'
-		);
+		$tokenContent = htmlentities(is_array($token) ? $token[1] : $token);
 		$tokenName = is_array($token) ? token_name($token[0]) : 'T_PUNCTUATION';
 
 		switch($tokenName) {
