@@ -1,13 +1,7 @@
 <div id="Container">
 	<img id="light" width="50" height="50" src="/themes/stationid/images/blinking-light.gif" alt="1 0 1 0 1 0 1 0"/>
 	<div id="MainContent">
-		<div id="Header">
-			<h1><a href="/">Station Identification</a></h1>
-		</div>
-		<p id="description">An interactive exploration of the Twin Cities’ radio landscape from the top of the Foshay Tower.</p>
-		<ul id="links">
-			<li id="twitter"><a href="http://twitter.com/station_id" target="_blank">Follow <span class="at">@</span><span class="twitter_handle">station_id</span> for updates</a></li>
-		</ul>
+		<% include MainContent %>
 	</div>
 	<div id="ScrollingContent">
 		<h2 id="on-air">ON AIR</h2>
