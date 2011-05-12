@@ -23,6 +23,7 @@
 
   <!-- Place favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
   <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="shortcut icon" href="/favicon.gif">
   <link rel="apple-touch-icon" href="$ThemeDir/images/apple-touch-icon.png">
 
 
@@ -68,7 +69,7 @@
   <!-- asynchronous google analytics: mathiasbynens.be/notes/async-analytics-snippet 
        change the UA-XXXXX-X to be your site's ID -->
   <script>
-   var _gaq = [['_setAccount', 'UA-XXXXX-X'], ['_trackPageview']];
+   var _gaq = [['_setAccount', 'UA-23301250-1'], ['_trackPageview']];
    (function(d, t) {
     var g = d.createElement(t),
         s = d.getElementsByTagName(t)[0];

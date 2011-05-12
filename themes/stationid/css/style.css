@@ -292,7 +292,7 @@ ul li strong {
 #light {
 	position: absolute;
 	top: 100px;
-	left: 30px;
+	left: 70px;
 	z-index: -1;
 }
 
@@ -311,7 +311,7 @@ ul li strong {
 	filter:alpha(opacity=90);
 }
 
-#ScrollingContent h2 {
+#ScrollingContent h2#on-air {
 	color: #ED1651;
 	font-family:'Helvetica W01 Blk Cn';
 	text-align: center;
@@ -395,8 +395,8 @@ ul li strong {
 #MainContent {
 	position: fixed;
 	top: 100px;
-	left: 15%;
-	width: 350px;
+	left: 150px;
+	width: 30%;
 }
 
 #MainContent ul#links {
@@ -426,7 +426,7 @@ ul li strong {
 
 
 #Background {
-	background: #000 url(/themes/stationid/images/foshay_bg.jpg) -600px 0 no-repeat;
+	background: #000 url(/themes/stationid/images/foshay_bg.jpg) -535px 0 no-repeat;
 	width: 100%;
 	height: 100%;
 	top: 0;
@@ -435,9 +435,48 @@ ul li strong {
 	z-index: -28;
 }
 
+#content {
+	padding-top: 100px;
+}
 
+.typography {
+	font-size: 14px;
+	color: #aaa;
+}
+.typography h2 {
+	font-family:'Helvetica W01 Blk Cn';
+	font-size: 30px;
+	font-weight: normal;
+	color: #ED1651;
+	
+}
 
+.typography h3 {
+	font-weight: bold;
+	font-size: 18px;
+	color: #ddd;
+}
 
+.typography p {
+	display: block;
+	margin: 1em 0;
+}
+
+.typography ul {
+	list-style: square;
+}
+
+.typography li {
+	text-transform: none;
+	margin: .5em 0;
+}
+
+.typography a, .typography a:active, .typography a:visited { color: #ED1651; }
+.typography a:hover { color: #fff; }
+
+.typography strong, .typography b {
+	color: #fff;
+}
 
 /*
  * Media queries for responsive design
