@@ -5,4 +5,50 @@
 }
 
 /* Slightly reducing font size to reduce need to scroll */
-body { font-size: 80%; }
+body {
+	font-size: 80%;
+	color: #000;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+#BigText { display: none; }
+
+#MainContent {
+	position: fixed;
+	top: 100px;
+	left: 150px;
+	width: 30%;
+}
+
+h1 {
+	font-family: 'LeagueGothicRegular', Helvetica, Arial, sans-serif;
+	font-weight: normal;
+	font-size: 36px;
+	text-transform: uppercase;
+	margin-bottom: 0;
+}
+
+#MainContent ul#links {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+#MainContent ul#links li {}
+#MainContent ul#links li a {
+	height: 18px;
+	padding-left: 20px;
+	background: transparent url(/themes/stationid/images/si_icons_sprite.png) 0 -17px no-repeat;
+}
+#MainContent ul#links li a:hover {
+	background-position: 0px 1px;
+}
+
+#MainContent ul#links li a .at {
+	color: #555;
+}
+
+#MainContent ul#links li a .twitter_handle {
+	text-transform: none;
+	font-size: 105%;
+	color: #ED1651;
+}
