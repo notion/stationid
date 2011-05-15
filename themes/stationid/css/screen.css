@@ -245,7 +245,7 @@ body {
 a, a:link, a:visited {
 	text-decoration: none;
 	color: #ED1651;
-	padding: .2em;
+/*	padding: .2em;*/
 }
 a:hover {
 /*	background: #000;*/
@@ -307,6 +307,10 @@ ul li strong {
 	width: 30%;
 }
 
+#MainContent p#description {
+	line-height: 1.4em;
+}
+
 #MainContent ul#links {
 	list-style: none;
 	margin: 1em 0 0 0;
@@ -319,11 +323,11 @@ ul li strong {
 #MainContent ul#links li a {
 	height: 18px;
 	padding-left: 20px;
-	background: transparent url(/themes/stationid/images/si_icons_sprite.png) 0 -17px no-repeat;
+	background: transparent url(/themes/stationid/images/si_icons_sprite.png) 0 -18px no-repeat;
 	color: #ccc;
 }
 #MainContent ul#links li a:hover {
-	background-position: 0px 1px;
+	background-position: 0px 0px;
 	color: #fff;
 }
 
@@ -337,10 +341,10 @@ ul li strong {
 	color: #ED1651;
 }
 #MainContent ul#links li#call-for-entries a {
-	background-position: 0px -53px;
+	background-position: 0px -54px;
 }
 #MainContent ul#links li#call-for-entries a:hover {
-	background-position: 0px -35px;
+	background-position: 0px -36px;
 }
 
 
