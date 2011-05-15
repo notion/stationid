@@ -244,7 +244,7 @@ body {
 
 a, a:link, a:visited {
 	text-decoration: none;
-	color: #ccc;
+	color: #ED1651;
 	padding: .2em;
 }
 a:hover {
@@ -261,11 +261,11 @@ h1 {
 }
 
 h1 a, h1 a:link, h1 a:visited {
-	padding: 0;
+	padding: 0; color: #ccc;
 }
 
 h1 a:hover {
-/*	background: #fff;*/
+	color: #fff;
 }
 
 ul {
@@ -299,6 +299,51 @@ ul li strong {
 #Header {
 /*	margin-top: 20%;*/
 }
+
+#MainContent {
+	position: fixed;
+	top: 100px;
+	left: 150px;
+	width: 30%;
+}
+
+#MainContent ul#links {
+	list-style: none;
+	margin: 1em 0 0 0;
+	padding: 0;
+}
+#MainContent li {
+	margin: .5em 0;
+}
+#MainContent ul#links li {}
+#MainContent ul#links li a {
+	height: 18px;
+	padding-left: 20px;
+	background: transparent url(/themes/stationid/images/si_icons_sprite.png) 0 -17px no-repeat;
+	color: #ccc;
+}
+#MainContent ul#links li a:hover {
+	background-position: 0px 1px;
+	color: #fff;
+}
+
+#MainContent ul#links li a .at {
+	color: #555;
+}
+
+#MainContent ul#links li a .twitter_handle {
+	text-transform: none;
+	font-size: 105%;
+	color: #ED1651;
+}
+#MainContent ul#links li#call-for-entries a {
+	background-position: 0px -53px;
+}
+#MainContent ul#links li#call-for-entries a:hover {
+	background-position: 0px -35px;
+}
+
+
 
 #ScrollingContent  {
 	position: absolute;
@@ -390,39 +435,12 @@ ul li strong {
 #ScrollingContent #notion-credit a.notion {
 	font-family: 'LeagueGothicRegular',Helvetica, Arial, sans-serif;
 	font-size: 30px;
+	color: #ccc;
+}
+#ScrollingContent #notion-credit a.notion:hover {
+	color: #fff;
 }
 
-#MainContent {
-	position: fixed;
-	top: 100px;
-	left: 150px;
-	width: 30%;
-}
-
-#MainContent ul#links {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-#MainContent ul#links li {}
-#MainContent ul#links li a {
-	height: 18px;
-	padding-left: 20px;
-	background: transparent url(/themes/stationid/images/si_icons_sprite.png) 0 -17px no-repeat;
-}
-#MainContent ul#links li a:hover {
-	background-position: 0px 1px;
-}
-
-#MainContent ul#links li a .at {
-	color: #555;
-}
-
-#MainContent ul#links li a .twitter_handle {
-	text-transform: none;
-	font-size: 105%;
-	color: #ED1651;
-}
 
 
 #Background {
