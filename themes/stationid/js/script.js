@@ -20,7 +20,7 @@
 		// background positioning
 		var bg_height = default_bg_pos[1];
 		bg_height = (default_bg_pos[1] - $(this).scrollTop())/REAR_PARRALAX;
-		console.log(pxDimensionsToArray($('#Background').css('background-position')));
+		// console.log(pxDimensionsToArray($('#Background').css('background-position')));
 		$('#Background').css('background-position', arrayToPxDimensions([default_bg_pos[0], bg_height]));
 				
 		// light positioning
@@ -33,7 +33,7 @@
 })(this.jQuery);
 
 function pxDimensionsToArray(string) {
-	console.log(string);
+	// console.log(string);
 	// convert string to array
 	var array = string.split(' ');
 	// remove 'px' and convert to numbers

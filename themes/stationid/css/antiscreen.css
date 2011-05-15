@@ -1,0 +1,49 @@
+* {
+	float: none;
+}
+
+body {
+	background: #000;
+	color: #ddd;
+}
+
+#MainContent {
+	position: static;
+	width: 100%;
+	padding: 0;
+}
+
+#ScrollingContent {
+	position: static;
+	width: 100% !important;
+}
+
+#ScrollingContent #BigText h2#on-air, #ScrollingContent #BigText .sc-line {
+	width: 100%;
+	position: static;
+	margin: 0;
+	padding: 0;
+	font-size: 200%;
+	line-height: 1.5em;
+	text-align: left;
+	border: none;
+}
+
+#ScrollingContent #content {
+	width: 100%;
+	height: auto;
+	margin: 0;
+	padding: 0;
+}
+
+#ScrollingContent #content {
+}
+
+#Background {
+	background-image: none;
+}
+
+#light {
+	position: static;
+}
+

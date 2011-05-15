@@ -1,17 +1,17 @@
-* {
-  float: none;       /* Screens are not big enough to account for floats */
-  background: #fff;  /*  As much contrast as possible */
+/** {
+  float: none;      
+  background: #fff;  
   color: #000;
-}
+}*/
 
 /* Slightly reducing font size to reduce need to scroll */
-body {
+/*body {
 	font-size: 80%;
-	color: #000;
+	color: #fff;
 	font-family: Helvetica, Arial, sans-serif;
-}
+}*/
 
-#BigText { display: none; }
+/*#BigText { display: none; }
 
 #MainContent {
 	position: fixed;
@@ -51,4 +51,4 @@ h1 {
 	text-transform: none;
 	font-size: 105%;
 	color: #ED1651;
-}
+}*/

@@ -30,9 +30,12 @@
   <!-- CSS : implied media="all" -->
 	<link href="http://fast.fonts.com/cssapi/c24845b9-2bfa-4bd3-95cd-64f9ec0a3b11.css" rel="stylesheet" type="text/css" />
 
-  <link rel="stylesheet" href="$ThemeDir/css/style.css?v=2">
+  <!-- <link rel="stylesheet" href="$ThemeDir/css/style.css?v=2"> -->
 
-  <link rel="stylesheet" media="handheld" href="$ThemeDir/css/handheld.css?v=2">
+  <!-- <link rel="stylesheet" media="handheld" href="$ThemeDir/css/handheld.css?v=2"> -->
+
+	<link rel="stylesheet" href="$ThemeDir/css/core.css" media="screen"/> 
+	<link rel="stylesheet" href="$ThemeDir/css/handheld.css" media="handheld, only screen and (max-device-width:480px)"/>
  
   <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
   <script src="$ThemeDir/js/libs/modernizr-1.6.min.js"></script>
