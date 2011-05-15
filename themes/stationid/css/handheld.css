@@ -1,3 +1,54 @@
+body {
+/*	background: #000 url(/themes/stationid/images/foshay_bg.jpg) center -100px no-repeat;*/
+}
+
+#light {
+	position: absolute;
+	top: 7px;
+	left: 0;
+}
+
+#MainContent h1 {
+	padding-left: 35px;
+	font-size: 35px;
+}
+
+#ScrollingContent {
+	margin-top: 50px;
+}
+
+#ScrollingContent #BigText h2#on-air {
+	border: 1px solid #ED1651;
+	text-align: center;
+	font-size: 600%;
+}
+
+#ScrollingContent #BigText .sc-line {
+	font-size: 500%;
+	text-align: center;
+}
+
+#ScrollingContent #BigText #sc-line2 {
+	font-size: 275%;
+}
+#ScrollingContent #BigText #sc-line3 {
+	font-size: 200%;
+}
+#ScrollingContent #BigText #sc-line4 {
+	font-size: 275%;
+}
+#ScrollingContent #BigText #sc-line5 {
+	font-size: 200%;
+}
+
+#ScrollingContent #notion-credit {
+	margin-top: 50px;
+}
+
+#Background {
+	
+}
+
 /** {
   float: none;      
   background: #fff;  

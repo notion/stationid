@@ -46,7 +46,7 @@ body {
 }
 
 #Background {
-	background-image: none;
+	display: none;
 }
 
 #light {
