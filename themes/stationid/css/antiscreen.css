@@ -5,6 +5,7 @@
 body {
 	background: #000;
 	color: #ddd;
+	padding: 10px;
 }
 
 #MainContent {
@@ -37,6 +38,11 @@ body {
 }
 
 #ScrollingContent #content {
+}
+
+#ScrollingContent #notion-credit {
+	padding: 0;
+	margin: 0;
 }
 
 #Background {
