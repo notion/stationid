@@ -5,7 +5,7 @@
 	</div>
 	<div id="ScrollingContent">
 		<% include BigText %>
-		<div id="content" class="typography">
+		<div id="content" class="typography home">
 			$Content
 		</div>
 		<div id="notion-credit">by <a class="notion" href="http://notioncollective.com">The Notion Collective</a></div>

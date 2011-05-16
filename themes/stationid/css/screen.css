@@ -437,6 +437,10 @@ iframe#fb-like:hover {
 	height: 2500px;
 }
 
+#ScrollingContent #content.home {
+	margin-top: 50%;
+}
+
 #ScrollingContent #video {
 	border: 1px solid #ED1651;
 	height: 224px;
@@ -474,6 +478,10 @@ iframe#fb-like:hover {
 
 #content {
 	padding-top: 50px;
+}
+
+#content.home {
+	margin-top: 800px;
 }
 
 .typography {

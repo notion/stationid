@@ -53,3 +53,9 @@ body {
 	position: static;
 }
 
+iframe#fb-like {
+	position: static;
+    opacity: 1;
+    -moz-opacity: 1;
+    filter:alpha(opacity=100);
+}
