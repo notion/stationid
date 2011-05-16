@@ -15,8 +15,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
   <title>$SiteConfig.Title // $SiteConfig.Tagline</title>
-  <meta name="description" content="">
-  <meta name="author" content="">
+  $MetaTags(false)
 
   <!--  Mobile viewport optimized: j.mp/bplateviewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,7 +38,10 @@
  
   <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
   <script src="$ThemeDir/js/libs/modernizr-1.6.min.js"></script>
-	<!-- <script type="text/javascript" src="http://fast.fonts.com/jsapi/c24845b9-2bfa-4bd3-95cd-64f9ec0a3b11.js"></script></head> -->
+	<!-- <script type="text/javascript" src="http://fast.fonts.com/jsapi/c24845b9-2bfa-4bd3-95cd-64f9ec0a3b11.js"></script> -->
+	
+	
+</head>
 
 <body>
 	$Form
