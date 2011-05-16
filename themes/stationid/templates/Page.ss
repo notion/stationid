@@ -17,6 +17,13 @@
   <title>$SiteConfig.Title // $SiteConfig.Tagline</title>
   $MetaTags(false)
 
+	<meta property="og:type" content="landmark" />
+	<meta property="og:title" content="$MetaTitle" />
+	<meta property="og:description" content="$MetaDescription" />
+	<meta property="og:site_name" content="$SiteConfig.Title" />
+	<meta property="og:image" content="$ThemeDir/images/station_identification.png" />
+	
+
   <!--  Mobile viewport optimized: j.mp/bplateviewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
