@@ -17,11 +17,16 @@
   <title>$SiteConfig.Title // $SiteConfig.Tagline</title>
   $MetaTags(false)
 
-	<meta property="og:type" content="landmark" />
+	<% if URLSegment = home %>
+	<meta property="og:url" content="http://stationidentification.notioncollective.com/" />
+	<% else %>
+	<meta property="og:url" content="http://stationidentification.notioncollective.com$Link" />
+	<% end_if %>
 	<meta property="og:title" content="$MetaTitle" />
+	<meta property="og:type" content="landmark" />
 	<meta property="og:description" content="$MetaDescription" />
 	<meta property="og:site_name" content="$SiteConfig.Title" />
-	<meta property="og:image" content="$ThemeDir/images/station_identification.png" />
+	<meta property="og:image" content="http://stationidentification.notioncollective.com/themes/stationid/images/station_identification.png" />
 	
 
   <!--  Mobile viewport optimized: j.mp/bplateviewport -->
