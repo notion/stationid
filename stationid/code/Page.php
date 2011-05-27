@@ -35,4 +35,12 @@ class Page_Controller extends ContentController {
 		// instead of putting Requirements calls here.  However these are 
 		// included so that our older themes still work
 	}
+	
+	public function index($args) {
+		$sc = SiteConfig::current_site_config();
+		if($args->getVar('stream') == 1 || $sc->StreamIsLive) {
+			return array("ShowStream" => true);
+		}
+		return array();
+	}
 }

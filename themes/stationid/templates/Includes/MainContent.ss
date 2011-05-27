@@ -1,6 +1,21 @@
 <div id="Header">
 	<h1><a href="/">Station Identification</a></h1>
 </div>
+<% if ShowStream %>
+	<div id='mediaplayer'></div>
+	<script type="text/javascript">
+	  jwplayer('mediaplayer').setup({
+	    'flashplayer': '$ThemeDir/jwplayer/player.swf',
+	    'id': 'playerID',
+	    'width': '238',
+	    'height': '24',
+	    'file': '$ThemeDir/jwplayer/video.mp4',
+		// 'file': 'broadcast1',
+		// 'streamer': 'streamer=rtmp://fss27.streamhoster.com/lv_notioncollective',
+		'skin': '$ThemeDir/jwplayer/simple.zip'
+	  });
+	</script>
+<% end_if %>
 <p id="description">An interactive exploration of the Twin Cities’ radio landscape from the top of the Foshay Tower.<br /><a href="/#content">Learn more &rarr;</a></p>
 <ul id="links">
 	<li id="call-for-entries"><a href="/call-for-entries/">Call for broadcast submissions</a></li>

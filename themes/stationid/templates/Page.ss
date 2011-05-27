@@ -52,7 +52,8 @@
   <script src="$ThemeDir/js/libs/modernizr-1.6.min.js"></script>
 	<!-- <script type="text/javascript" src="http://fast.fonts.com/jsapi/c24845b9-2bfa-4bd3-95cd-64f9ec0a3b11.js"></script> -->
 	
-	
+	<!-- jw media player -->
+  <script src="$ThemeDir/jwplayer/jwplayer.js"></script>
 </head>
 
 <body>
@@ -69,8 +70,8 @@
   <script src="$ThemeDir/js/plugins.js"></script>
   <script src="$ThemeDir/js/script.js"></script>
   <!-- end concatenated and minified scripts-->
-  
-  
+
+
   <!--[if lt IE 7 ]>
     <script src="$ThemeDir/js/libs/dd_belatedpng.js"></script>
     <script> DD_belatedPNG.fix('img, .png_bg'); //fix any <img> or .png_bg background-images </script>

@@ -8,6 +8,9 @@ $database = 'stationid';
 
 require_once('conf/ConfigureFromEnv.php');
 
+// Add custom site config
+Object::add_extension('SiteConfig', 'CustomSiteConfig');
+
 MySQLDatabase::set_connection_charset('utf8');
 
 // This line set's the current theme. More themes can be
