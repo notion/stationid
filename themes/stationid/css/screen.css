@@ -362,6 +362,9 @@ iframe#fb-like:hover {
 	background-position: 0px -36px;
 }
 
+#MediaPlayerWrap {
+	margin: 0px 0px 10px 0px;
+}
 
 
 #ScrollingContent  {

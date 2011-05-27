@@ -2,9 +2,11 @@
 	<h1><a href="/">Station Identification</a></h1>
 </div>
 <% if ShowStream %>
-	<div id='mediaplayer'></div>
+	<div id='MediaPlayerWrap'>
+		<div id='MediaPlayer'></div>
+	</div>
 	<script type="text/javascript">
-	  jwplayer('mediaplayer').setup({
+	  jwplayer('MediaPlayer').setup({
 	    'flashplayer': '$ThemeDir/jwplayer/player.swf',
 	    'id': 'playerID',
 	    'width': '238',
