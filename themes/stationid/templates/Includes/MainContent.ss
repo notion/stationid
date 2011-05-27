@@ -14,6 +14,7 @@
 	    'file': '$ThemeDir/jwplayer/video.mp4',
 		// 'file': 'broadcast1',
 		// 'streamer': 'streamer=rtmp://fss27.streamhoster.com/lv_notioncollective',
+		// 'type': 'rtmp',
 		'skin': '$ThemeDir/jwplayer/simple.zip'
 	  });
 	</script>
