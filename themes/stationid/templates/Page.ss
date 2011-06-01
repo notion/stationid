@@ -47,13 +47,14 @@
 
 	<link rel="stylesheet" href="$ThemeDir/css/core.css" media="screen"/> 
 	<link rel="stylesheet" href="$ThemeDir/css/handheld.css" media="handheld, only screen and (max-device-width:480px)"/>
- 
+
   <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
   <script src="$ThemeDir/js/libs/modernizr-1.6.min.js"></script>
 	<!-- <script type="text/javascript" src="http://fast.fonts.com/jsapi/c24845b9-2bfa-4bd3-95cd-64f9ec0a3b11.js"></script> -->
 	
 	<!-- jw media player -->
-  <script src="$ThemeDir/jwplayer/jwplayer.js"></script>
+  	<script src="$ThemeDir/jwplayer/jwplayer.js"></script>
+	
 </head>
 
 <body>
@@ -65,6 +66,8 @@
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
   <script>!window.jQuery && document.write(unescape('%3Cscript src="$ThemeDir/js/libs/jquery-1.4.2.js"%3E%3C/script%3E'))</script>
   
+	<!-- jQuery Tweet plugin -->
+	<script src="$ThemeDir/js/jquery.tweet.js"></script>
   
   <!-- scripts concatenated and minified via ant build script-->
   <script src="$ThemeDir/js/plugins.js"></script>
@@ -82,7 +85,6 @@
   <script src="$ThemeDir/js/profiling/config.js"></script>
   <!-- end profiling code -->
 
-
   <!-- asynchronous google analytics: mathiasbynens.be/notes/async-analytics-snippet 
        change the UA-XXXXX-X to be your site's ID -->
   <script>
@@ -95,7 +97,7 @@
     s.parentNode.insertBefore(g, s);
    })(document, 'script');
   </script>
-
+	
 	<iframe id="fb-like" src="http://www.facebook.com/plugins/like.php?app_id=212180785468775&amp;href=http%3A%2F%2Fstationidentification.notioncollective.com&amp;send=false&amp;layout=button_count&amp;width=100&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:50px; height:21px;" allowTransparency="true"></iframe>
 </body>
 </html>
