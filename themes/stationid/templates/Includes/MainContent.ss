@@ -11,10 +11,11 @@
 	    'id': 'playerID',
 	    'width': '238',
 	    'height': '24',
-	    'file': '$ThemeDir/jwplayer/video.mp4',
-		// 'file': 'broadcast1',
-		// 'streamer': 'streamer=rtmp://fss27.streamhoster.com/lv_notioncollective',
-		// 'type': 'rtmp',
+	    //'file': '$ThemeDir/jwplayer/video.mp4',
+		'file': 'mp4:broadcast1',
+		'streamer': 'rtmp://fss27.streamhoster.com/lv_notioncollective',
+		'type': 'rtmp',
+		'autostart': true,
 		'skin': '$ThemeDir/jwplayer/simple.zip'
 	  });
 	</script>
