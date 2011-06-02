@@ -5,7 +5,6 @@
 <% if ShowStream %>
 	<div id='MediaPlayerWrap'>
 		<div id='MediaPlayer'></div>
-		<div class="tweet"></div>
 	</div>
 	<script type="text/javascript">
 	  jwplayer('MediaPlayer').setup({
@@ -36,6 +35,7 @@
 	  });
 	</script>
 <% end_if %>
+<div class="tweet"></div>
 <ul id="links">
 	<!-- <li id="call-for-entries"><a href="/call-for-entries/">Call for broadcast submissions</a></li> -->
 	<li id="twitter"><a href="http://twitter.com/station_id" target="_blank">Follow <span class="at">@</span><span class="twitter_handle">station_id</span> for updates</a></li>
