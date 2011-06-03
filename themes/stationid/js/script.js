@@ -17,6 +17,9 @@
 		loading_text: "loading tweets..."
 	});
 	
+	// Attempted hack to autoplay jw player
+	$.jwplayer().play();
+	
 	// console.log($('#ScrollingContent').height());
 	
 	var REAR_PARRALAX = 5;

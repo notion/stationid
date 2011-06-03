@@ -9,7 +9,6 @@
 	</div>
 	<script type="text/javascript">
 	  jwplayer('MediaPlayer').setup({
-	    'id': 'sidPlayer',
 	    'width': '100%',
 	    'height': '24',
 		'provider': 'rtmp',
@@ -21,7 +20,7 @@
 		'modes': [
 			{
 				type: 'flash', 
-				src: '$ThemeDir/jwplayer/player.swf',
+				src: '$ThemeDir/jwplayer/player.swf'
 			},
 			{
 				type: 'html5',
@@ -29,7 +28,7 @@
 					'file': 'http://fss27.streamhoster.com/lv_notioncollective/broadcast1/playlist.m3u8',
 					'provider': 'video',
 					'x-webkit-airplay': 'allow',
-					'autoplay': 'autoplay'
+					'height': '100'
 				}
 			}
 		]
