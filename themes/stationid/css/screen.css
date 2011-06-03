@@ -324,6 +324,7 @@ iframe#fb-like:hover {
 
 #MainContent p#description {
 	line-height: 1.4em;
+	margin-bottom: 15px;
 }
 
 #MainContent ul#links {
@@ -363,7 +364,7 @@ iframe#fb-like:hover {
 }
 
 #MediaPlayerWrap {
-	margin: 15px 0px 15px 0px;
+	margin: 15px 0px 5px 0px;
 	background: #fff;
 }
 
