@@ -13,7 +13,7 @@
 	});
 	
 	// Attempted hack to autoplay jw player
-	$.jwplayer().play();
+	// $.jwplayer().play();
 	
 	// console.log($('#ScrollingContent').height());
 	
