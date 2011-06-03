@@ -349,11 +349,11 @@ iframe#fb-like:hover {
 #MainContent ul#links li a {
 	height: 18px;
 	padding-left: 20px;
-	background: transparent url(/themes/stationid/images/si_icons_sprite.png) 0 -18px no-repeat;
+	background: transparent url(/themes/stationid/images/si_icons_sprite.png) 0 -54px no-repeat;
 	color: #ccc;
 }
 #MainContent ul#links li a:hover {
-	background-position: 0px 0px;
+	background-position: 0px -36px;
 	color: #fff;
 }
 
@@ -366,11 +366,11 @@ iframe#fb-like:hover {
 	font-size: 105%;
 	color: #ED1651;
 }
-#MainContent ul#links li#call-for-entries a {
-	background-position: 0px -54px;
+#MainContent ul#links li#twitter a {
+	background-position: 0px -18px;
 }
-#MainContent ul#links li#call-for-entries a:hover {
-	background-position: 0px -36px;
+#MainContent ul#links li#twitter a:hover {
+	background-position: 0px 0px;
 }
 
 #MediaPlayerWrap {
