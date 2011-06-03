@@ -252,6 +252,16 @@ a:hover {
 	color: #fff;
 }
 
+table {
+	border-top: 3px solid #ED1651;
+	border-bottom: 3px solid #ED1651;
+}
+tr {}
+th, td {
+	padding: 5px;
+	border-bottom: 1px solid #555;
+}
+
 h1 {
 	font-family: 'LeagueGothicRegular',Helvetica, Arial, sans-serif;
 	font-weight: normal;
@@ -279,8 +289,8 @@ ul li {
 }
 
 ul li strong {
-	font-size: 115%;
-	text-shadow: #ddd 1px 1px 1px;
+/*	font-size: 115%;
+	text-shadow: #ddd 1px 1px 1px;*/
 }
 
 #Container {
@@ -439,7 +449,7 @@ iframe#fb-like:hover {
 	width: 400px;
 	margin-top: 50px;
 	margin-left: 30%;
-	height: 2500px;
+/*	min-height: 2500px;*/
 }
 
 #ScrollingContent #content.home {
@@ -458,6 +468,7 @@ iframe#fb-like:hover {
 	color: #fff;
 	text-align: right;
 	padding: 15px 50px;
+	margin-top: 1000px;
 }
 
 #ScrollingContent #notion-credit a.notion {
@@ -478,7 +489,7 @@ iframe#fb-like:hover {
 	top: 0;
 	left: 0;
 	position: fixed;
-	z-index: -28;
+	z-index: -99;
 }
 
 #content {
@@ -504,7 +515,9 @@ iframe#fb-like:hover {
 .typography h3 {
 	font-weight: bold;
 	font-size: 18px;
-	color: #ddd;
+	color: #ED1651;
+	margin-top: 1em;
+	padding-top: 1em;
 }
 
 .typography p {
